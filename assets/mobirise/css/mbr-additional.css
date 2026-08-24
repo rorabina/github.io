@@ -2054,8 +2054,8 @@ a {
 }
 .cid-tJS9NNcTLZ {
   padding-top: 6rem;
-  padding-bottom: 6rem;
-  background-color: #2b7a69;
+  padding-bottom: 0rem;
+  background-color: #ffffff;
 }
 @media (max-width: 991px) {
   .cid-tJS9NNcTLZ .container {
@@ -2112,7 +2112,7 @@ a {
 }
 .cid-tJS9NNcTLZ .copyright {
   margin-bottom: 0;
-  color: #ffffff;
+  color: #000000;
   text-align: center;
 }
 .cid-tJS9NNcTLZ .mbr-section-title {
