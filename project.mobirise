@@ -54,7 +54,7 @@
     "versionPublish": "6.1.12",
     "imageResize": true,
     "chatbutton": {},
-    "favicon": "@PROJECT_PATH@/assets/images/20260825-102640b-128x128.png",
+    "favicon": "@PROJECT_PATH@/assets/images/20260825-102640b-128x128_1.png",
     "mbrsiteDomain": "rjrabina",
     "usedWebp": true,
     "cssOptimize": false,
