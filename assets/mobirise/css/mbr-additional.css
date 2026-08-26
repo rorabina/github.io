@@ -1703,7 +1703,7 @@ a {
 }
 .cid-vtgwmNWRJN {
   padding-top: 6rem;
-  padding-bottom: 0rem;
+  padding-bottom: 6rem;
   background-color: #edefeb;
 }
 .cid-vtgwmNWRJN .content-text {
@@ -1712,7 +1712,7 @@ a {
 .cid-vtdz568GbV {
   padding-top: 6rem;
   padding-bottom: 6rem;
-  background-color: #edefeb;
+  background-image: url("../../../assets/images/background1.jpg");
 }
 .cid-vtdz568GbV .mbr-fallback-image.disabled {
   display: none;
@@ -1738,11 +1738,20 @@ a {
 }
 .cid-vtdz568GbV .mbr-iconfont {
   font-size: 3rem;
-  color: #2e481a;
+  color: #ffffff;
   padding-right: 2rem;
 }
 .cid-vtdz568GbV .content-head {
   max-width: 800px;
+}
+.cid-vtdz568GbV .mbr-section-title {
+  color: #ffffff;
+}
+.cid-vtdz568GbV .card-title {
+  color: #ffffff;
+}
+.cid-vtdz568GbV .card-text {
+  color: #ffffff;
 }
 .cid-vtdKxe28EV {
   padding-top: 0rem;
@@ -2615,7 +2624,7 @@ a {
 .cid-vtdKxe28EV {
   padding-top: 0rem;
   padding-bottom: 0rem;
-  background-color: #edefeb;
+  background-image: url("../../../assets/images/background1.jpg");
 }
 @media (max-width: 991px) {
   .cid-vtdKxe28EV .container {
@@ -3420,7 +3429,7 @@ a {
 .cid-vtdKxe28EV {
   padding-top: 0rem;
   padding-bottom: 0rem;
-  background-color: #ffffff;
+  background-image: url("../../../assets/images/background1.jpg");
 }
 @media (max-width: 991px) {
   .cid-vtdKxe28EV .container {
@@ -4272,7 +4281,7 @@ a {
 .cid-vtgd6fbw8X {
   padding-top: 0rem;
   padding-bottom: 0rem;
-  background-color: #edefeb;
+  background-image: url("../../../assets/images/background1.jpg");
 }
 @media (max-width: 991px) {
   .cid-vtgd6fbw8X .container {
@@ -5083,7 +5092,7 @@ a {
 .cid-vtgdh1wEtD {
   padding-top: 0rem;
   padding-bottom: 0rem;
-  background-color: #edefeb;
+  background-image: url("../../../assets/images/background1.jpg");
 }
 @media (max-width: 991px) {
   .cid-vtgdh1wEtD .container {
@@ -5972,7 +5981,7 @@ a {
 .cid-vtgdqnUJ20 {
   padding-top: 0rem;
   padding-bottom: 0rem;
-  background-color: #edefeb;
+  background-image: url("../../../assets/images/background1.jpg");
 }
 @media (max-width: 991px) {
   .cid-vtgdqnUJ20 .container {
