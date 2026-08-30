@@ -1384,6 +1384,9 @@ a {
 .cid-vtcS2F6uHK .mbr-section-btn {
   text-align: center;
 }
+.cid-vtcS2F6uHK .mbr-section-title {
+  text-align: center;
+}
 .cid-tMlDYtQ5fF {
   padding-top: 6rem;
   padding-bottom: 0rem;
@@ -1709,42 +1712,52 @@ a {
 .cid-vtgwmNWRJN .content-text {
   max-width: 800px;
 }
-.cid-vtKKgduQHx {
-  padding-top: 6rem;
-  padding-bottom: 0rem;
-  background-color: #ffffff;
-}
-.cid-vtKKgduQHx .mbr-fallback-image.disabled {
-  display: none;
-}
-.cid-vtKKgduQHx .mbr-fallback-image {
-  display: block;
-  background-size: cover;
-  background-position: center center;
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-}
-.cid-vtKKgduQHx .item-wrapper {
+.cid-vtM103xdwF {
   display: flex;
-  margin-bottom: 2rem;
-  border-radius: 0 !important;
+  background-image: url("../../../assets/images/mbr-3-1920x1280.jpg");
 }
-@media (max-width: 767px) {
-  .cid-vtKKgduQHx .item-wrapper {
-    margin-bottom: 1rem;
+.cid-vtM103xdwF .mbr-overlay {
+  background-color: #000000;
+  opacity: 0.5;
+}
+@media (min-width: 768px) {
+  .cid-vtM103xdwF {
+    align-items: center;
+  }
+  .cid-vtM103xdwF .row {
+    justify-content: center;
+  }
+  .cid-vtM103xdwF .content-wrap {
+    padding: 1rem 3rem;
   }
 }
-.cid-vtKKgduQHx .mbr-iconfont {
-  font-size: 3rem;
-  color: #2e481a;
-  padding-right: 2rem;
+@media (max-width: 991px) and (min-width: 768px) {
+  .cid-vtM103xdwF .content-wrap {
+    min-width: 50%;
+  }
 }
-.cid-vtKKgduQHx .content-head {
-  max-width: 800px;
+@media (max-width: 767px) {
+  .cid-vtM103xdwF {
+    -webkit-align-items: center;
+    align-items: center;
+  }
+  .cid-vtM103xdwF .mbr-row {
+    -webkit-justify-content: center;
+    justify-content: center;
+  }
+  .cid-vtM103xdwF .content-wrap {
+    width: 100%;
+  }
 }
-.cid-vtKKgduQHx .mbr-section-title {
+.cid-vtM103xdwF .mbr-section-title,
+.cid-vtM103xdwF .mbr-section-subtitle {
+  text-align: center;
+}
+.cid-vtM103xdwF .mbr-text,
+.cid-vtM103xdwF .mbr-section-btn {
+  text-align: center;
+}
+.cid-vtM103xdwF .mbr-section-title {
   text-align: center;
 }
 .cid-vtKKvpNwDj {
