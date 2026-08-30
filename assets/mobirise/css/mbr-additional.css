@@ -1709,49 +1709,9 @@ a {
 .cid-vtgwmNWRJN .content-text {
   max-width: 800px;
 }
-.cid-vtKKe6O3Cq {
-  padding-top: 6rem;
-  padding-bottom: 6rem;
-  background-color: #ffffff;
-}
-.cid-vtKKe6O3Cq .mbr-fallback-image.disabled {
-  display: none;
-}
-.cid-vtKKe6O3Cq .mbr-fallback-image {
-  display: block;
-  background-size: cover;
-  background-position: center center;
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-}
-.cid-vtKKe6O3Cq .item-wrapper {
-  display: flex;
-  margin-bottom: 2rem;
-}
-@media (max-width: 767px) {
-  .cid-vtKKe6O3Cq .item-wrapper {
-    margin-bottom: 1rem;
-  }
-}
-.cid-vtKKe6O3Cq .mbr-iconfont {
-  font-size: 3rem;
-  color: #2e481a;
-  padding-right: 1.5rem;
-}
-.cid-vtKKe6O3Cq img,
-.cid-vtKKe6O3Cq .item-img {
-  width: 100%;
-  height: 300px;
-  object-fit: cover;
-}
-.cid-vtKKe6O3Cq .content-head {
-  max-width: 800px;
-}
 .cid-vtKKgduQHx {
   padding-top: 6rem;
-  padding-bottom: 6rem;
+  padding-bottom: 10rem;
   background-color: #ffffff;
 }
 .cid-vtKKgduQHx .mbr-fallback-image.disabled {
