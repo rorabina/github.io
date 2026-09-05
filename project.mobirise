@@ -28,7 +28,7 @@
         "isLargeButtons": false,
         "isGhostButtonBorder": true,
         "underlinedLinks": false,
-        "isAnimatedOnScroll": true,
+        "isAnimatedOnScroll": false,
         "isScrollToTopButton": false
       },
       "additionalSetColors": [
