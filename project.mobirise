@@ -1,7 +1,7 @@
 {
   "settings": {
     "name": "RJrb",
-    "currentPage": "index.html",
+    "currentPage": "timeline.html",
     "theme": {
       "name": "startm5",
       "title": "StartM5",
@@ -4430,7 +4430,7 @@
               "text-align": "center"
             },
             ".mbr-card-title": {
-              "text-align": "right",
+              "text-align": "justify",
               "color": "#000000"
             }
           },
