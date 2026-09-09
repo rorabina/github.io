@@ -21,9 +21,6 @@
 		<loc>https://rjrabina.vercel.app/merch.html</loc>
 	</url>
 	<url>
-		<loc>https://rjrabina.vercel.app/cuisines.html</loc>
-	</url>
-	<url>
 		<loc>https://rjrabina.vercel.app/travel.html</loc>
 	</url>
 	<url>
@@ -40,5 +37,14 @@
 	</url>
 	<url>
 		<loc>https://rjrabina.vercel.app/defense-tech.html</loc>
+	</url>
+	<url>
+		<loc>https://rjrabina.vercel.app/interests.html</loc>
+	</url>
+	<url>
+		<loc>https://rjrabina.vercel.app/digital-visual-creation.html</loc>
+	</url>
+	<url>
+		<loc>https://rjrabina.vercel.app/photography.html</loc>
 	</url>
 </urlset>
