@@ -12,9 +12,6 @@
 		<loc>https://rjrabina.vercel.app/timeline.html</loc>
 	</url>
 	<url>
-		<loc>https://rjrabina.vercel.app/works.html</loc>
-	</url>
-	<url>
 		<loc>https://rjrabina.vercel.app/events.html</loc>
 	</url>
 	<url>
@@ -46,5 +43,8 @@
 	</url>
 	<url>
 		<loc>https://rjrabina.vercel.app/local-adventures.html</loc>
+	</url>
+	<url>
+		<loc>https://rjrabina.vercel.app/portfolio-creative-works.html</loc>
 	</url>
 </urlset>
