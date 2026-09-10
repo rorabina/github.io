@@ -2202,41 +2202,15 @@ a {
     padding: 1rem;
   }
 }
-.cid-vtgi07jyvv {
+.cid-vuRdCqUcWk {
   padding-top: 10rem;
   padding-bottom: 0rem;
   background-color: #ffffff;
 }
-.cid-vtgi07jyvv .item-wrapper {
-  margin-bottom: 2rem;
-}
-@media (max-width: 767px) {
-  .cid-vtgi07jyvv .smallImage {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  .cid-vtgi07jyvv .largeImage {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  .cid-vtgi07jyvv .largeImage .item {
-    margin-bottom: 2rem;
-  }
-  .cid-vtgi07jyvv .item-wrapper {
-    margin-bottom: 1rem;
-  }
-}
-@media (max-width: 767px) and (max-width: 767px) {
-  .cid-vtgi07jyvv .largeImage .item {
-    margin-bottom: 1rem;
-  }
-}
-.cid-vtgi07jyvv .mbr-fallback-image.disabled {
+.cid-vuRdCqUcWk .mbr-fallback-image.disabled {
   display: none;
 }
-.cid-vtgi07jyvv .mbr-fallback-image {
+.cid-vuRdCqUcWk .mbr-fallback-image {
   display: block;
   background-size: cover;
   background-position: center center;
@@ -2245,74 +2219,10 @@ a {
   position: absolute;
   top: 0;
 }
-.cid-vtgi07jyvv .mbr-description {
+.cid-vuRdCqUcWk .mbr-description {
   text-align: left;
 }
-.cid-vtgi07jyvv .card-title,
-.cid-vtgi07jyvv .iconfont-wrapper {
-  color: #000000;
-}
-.cid-vtgi07jyvv .card-text {
-  color: #000000;
-}
-.cid-vtgi07jyvv .mbr-section-title {
-  color: #000000;
-  text-align: center;
-}
-.cid-vtgi07jyvv .mbr-number {
-  color: #9fe870;
-}
-.cid-vtgi07jyvv .mbr-text,
-.cid-vtgi07jyvv .mbr-section-btn {
-  text-align: center;
-}
-.cid-vtgi07jyvv .card-text,
-.cid-vtgi07jyvv .item .mbr-section-btn {
-  text-align: left;
-}
-.cid-vtgi07jyvv .smallImage {
-  width: 100%;
-  height: 300px;
-  object-fit: cover;
-}
-@media (max-width: 992px) {
-  .cid-vtgi07jyvv .smallImage {
-    height: 100%;
-    object-fit: cover;
-  }
-}
-.cid-vtgi07jyvv .largeImage {
-  width: 100%;
-  height: 632px;
-  object-fit: cover;
-}
-@media (max-width: 992px) {
-  .cid-vtgi07jyvv .largeImage {
-    height: 100%;
-    object-fit: cover;
-  }
-}
-.cid-vtgizXahSG {
-  padding-top: 0rem;
-  padding-bottom: 0rem;
-  background-color: #ffffff;
-}
-.cid-vtgizXahSG .mbr-fallback-image.disabled {
-  display: none;
-}
-.cid-vtgizXahSG .mbr-fallback-image {
-  display: block;
-  background-size: cover;
-  background-position: center center;
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-}
-.cid-vtgizXahSG .mbr-description {
-  text-align: left;
-}
-.cid-vtgizXahSG .item-wrapper {
+.cid-vuRdCqUcWk .item-wrapper {
   background: #ffffff;
   padding: 2.25rem;
   height: 100%;
@@ -2320,78 +2230,137 @@ a {
   flex-direction: column;
 }
 @media (max-width: 767px) {
-  .cid-vtgizXahSG .item-wrapper {
+  .cid-vuRdCqUcWk .item-wrapper {
     padding: 2rem 1.5rem;
   }
 }
 @media (min-width: 992px) and (max-width: 1200px) {
-  .cid-vtgizXahSG .item-wrapper {
+  .cid-vuRdCqUcWk .item-wrapper {
     padding: 2rem 1.5rem;
   }
 }
-.cid-vtgizXahSG .card-title,
-.cid-vtgizXahSG .iconfont-wrapper {
+.cid-vuRdCqUcWk .card-title,
+.cid-vuRdCqUcWk .iconfont-wrapper {
   color: #000000;
 }
-.cid-vtgizXahSG .card-text {
+.cid-vuRdCqUcWk .card-text {
   color: #000000;
 }
-.cid-vtgizXahSG .mbr-section-title {
+.cid-vuRdCqUcWk .mbr-section-title {
   color: #000000;
   text-align: center;
 }
-.cid-vtgizXahSG .mbr-number {
+.cid-vuRdCqUcWk .mbr-number {
   color: #9fe870;
 }
-.cid-vtgizXahSG .mbr-text,
-.cid-vtgizXahSG .mbr-section-btn {
+.cid-vuRdCqUcWk .mbr-text,
+.cid-vuRdCqUcWk .mbr-section-btn {
   text-align: center;
 }
-.cid-vtgizXahSG .card-text,
-.cid-vtgizXahSG .item .mbr-section-btn {
+.cid-vuRdCqUcWk .card-text,
+.cid-vuRdCqUcWk .item .mbr-section-btn {
   text-align: left;
 }
-.cid-vtgizXahSG .mbr-section-btn {
+.cid-vuRdCqUcWk .mbr-section-btn {
   margin-top: 1rem;
 }
-.cid-vtgizXahSG .image-wrapper {
+.cid-vuRdCqUcWk .image-wrapper {
   margin-bottom: 0rem;
   padding: 0rem;
 }
 @media (max-width: 767px) {
-  .cid-vtgizXahSG .image-wrapper {
+  .cid-vuRdCqUcWk .image-wrapper {
     padding: 0rem 0rem;
     margin-bottom: 0rem;
   }
 }
 @media (min-width: 992px) and (max-width: 1200px) {
-  .cid-vtgizXahSG .image-wrapper {
+  .cid-vuRdCqUcWk .image-wrapper {
     padding: 0rem 0rem;
     margin-bottom: 0rem;
   }
 }
-.cid-vtgizXahSG .image-wrapper img {
+.cid-vuRdCqUcWk .image-wrapper img {
   height: 100%;
   object-fit: cover;
 }
-.cid-vtgizXahSG .item-mb {
+.cid-vuRdCqUcWk .item-mb {
   margin-bottom: 2rem;
 }
 @media (max-width: 767px) {
-  .cid-vtgizXahSG .item-mb {
+  .cid-vuRdCqUcWk .item-mb {
     margin-bottom: 1rem;
   }
 }
-.cid-vtgizXahSG .card-title {
+.cid-vuRdCqUcWk .card-title {
   text-align: left;
 }
-.cid-vtgizXahSG .item-content {
+.cid-vuRdCqUcWk .item-content {
   display: flex;
   flex-direction: column;
   height: 100%;
 }
-.cid-vtgizXahSG .item-content .item-footer {
+.cid-vuRdCqUcWk .item-content .item-footer {
   margin-top: auto;
+}
+.cid-vuR8zdZ7o1 {
+  padding-top: 5rem;
+  padding-bottom: 0rem;
+  background-color: #ffffff;
+}
+.cid-vuR8zdZ7o1 .mbr-text {
+  color: #000000;
+}
+.cid-vuR8zdZ7o1 .mbr-section-subtitle {
+  color: #000000;
+}
+.cid-vuR8Zwtlas {
+  padding-top: 6rem;
+  padding-bottom: 0rem;
+  background-color: #ffffff;
+}
+.cid-vuR8Zwtlas .mbr-fallback-image.disabled {
+  display: none;
+}
+.cid-vuR8Zwtlas .mbr-fallback-image {
+  display: block;
+  background-size: cover;
+  background-position: center center;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+}
+.cid-vuR8Zwtlas .row {
+  justify-content: center;
+}
+.cid-vuR8Zwtlas .item {
+  margin-bottom: 2rem;
+}
+@media (max-width: 767px) {
+  .cid-vuR8Zwtlas .item {
+    margin-bottom: 1rem;
+  }
+}
+.cid-vuR8Zwtlas .item .item-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #f7f7f7;
+  padding: 2.25rem;
+}
+@media (min-width: 992px) and (max-width: 1200px) {
+  .cid-vuR8Zwtlas .item .item-wrapper {
+    padding: 2rem 1.5rem;
+  }
+}
+@media (max-width: 767px) {
+  .cid-vuR8Zwtlas .item .item-wrapper {
+    padding: 2rem 1.5rem;
+  }
+}
+.cid-vuR8Zwtlas .content-head {
+  max-width: 800px;
 }
 .cid-vtQJDAKGCD {
   background-color: #ffffff;
