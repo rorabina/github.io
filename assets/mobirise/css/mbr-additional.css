@@ -1670,7 +1670,7 @@ a {
 }
 @media (min-width: 768px) {
   .cid-vuRrgTFlwU {
-    align-items: flex-end;
+    align-items: center;
   }
   .cid-vuRrgTFlwU .row {
     justify-content: center;
@@ -1687,7 +1687,7 @@ a {
 @media (max-width: 767px) {
   .cid-vuRrgTFlwU {
     -webkit-align-items: center;
-    align-items: flex-end;
+    align-items: center;
   }
   .cid-vuRrgTFlwU .mbr-row {
     -webkit-justify-content: center;
@@ -12512,7 +12512,7 @@ a {
   width: 6rem;
 }
 .cid-vtQLfTaRnc {
-  padding-top: 10rem;
+  padding-top: 7rem;
   padding-bottom: 0rem;
   background-color: #ffffff;
 }
