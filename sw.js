@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ror-pwa-1789220389995';
+const CACHE_NAME = 'ror-pwa-1789220626393';
 const PRECACHE_ASSETS = [
   "/about.html",
   "/animal-welfare.html",
@@ -15,6 +15,7 @@ const PRECACHE_ASSETS = [
   "/assets/images/20260910-143919-128x128-1.png",
   "/assets/images/20260912-120839-815x815.jpg",
   "/assets/images/20260912-121008-815x815.png",
+  "/assets/images/background17.jpg",
   "/assets/images/gallery01.jpg",
   "/assets/images/gallery02.jpg",
   "/assets/images/gallery03.jpg",
