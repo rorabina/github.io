@@ -14032,51 +14032,6 @@ a {
     text-align: center;
   }
 }
-.cid-vv0SR6n4mO {
-  display: flex;
-  background-image: url("../../../assets/images/background17.jpg");
-}
-.cid-vv0SR6n4mO .mbr-overlay {
-  background-color: #000000;
-  opacity: 0.5;
-}
-@media (min-width: 768px) {
-  .cid-vv0SR6n4mO {
-    align-items: flex-end;
-  }
-  .cid-vv0SR6n4mO .row {
-    justify-content: center;
-  }
-  .cid-vv0SR6n4mO .content-wrap {
-    padding: 1rem 3rem;
-  }
-}
-@media (max-width: 991px) and (min-width: 768px) {
-  .cid-vv0SR6n4mO .content-wrap {
-    min-width: 50%;
-  }
-}
-@media (max-width: 767px) {
-  .cid-vv0SR6n4mO {
-    -webkit-align-items: center;
-    align-items: flex-end;
-  }
-  .cid-vv0SR6n4mO .mbr-row {
-    -webkit-justify-content: center;
-    justify-content: center;
-  }
-  .cid-vv0SR6n4mO .content-wrap {
-    width: 100%;
-  }
-}
-.cid-vv0SR6n4mO .mbr-section-title,
-.cid-vv0SR6n4mO .mbr-section-subtitle {
-  text-align: center;
-}
-.cid-vv0SR6n4mO .mbr-text,
-.cid-vv0SR6n4mO .mbr-section-btn {
-  text-align: center;
-}
 .cid-vuYcgMvgWk {
   z-index: 1000;
   width: 100%;
@@ -14635,6 +14590,51 @@ a {
   .cid-vuYcgMvgWk .navbar-collapse {
     padding: 1rem;
   }
+}
+.cid-vv0SR6n4mO {
+  display: flex;
+  background-image: url("../../../assets/images/background17.jpg");
+}
+.cid-vv0SR6n4mO .mbr-overlay {
+  background-color: #000000;
+  opacity: 0.5;
+}
+@media (min-width: 768px) {
+  .cid-vv0SR6n4mO {
+    align-items: flex-end;
+  }
+  .cid-vv0SR6n4mO .row {
+    justify-content: center;
+  }
+  .cid-vv0SR6n4mO .content-wrap {
+    padding: 1rem 3rem;
+  }
+}
+@media (max-width: 991px) and (min-width: 768px) {
+  .cid-vv0SR6n4mO .content-wrap {
+    min-width: 50%;
+  }
+}
+@media (max-width: 767px) {
+  .cid-vv0SR6n4mO {
+    -webkit-align-items: center;
+    align-items: flex-end;
+  }
+  .cid-vv0SR6n4mO .mbr-row {
+    -webkit-justify-content: center;
+    justify-content: center;
+  }
+  .cid-vv0SR6n4mO .content-wrap {
+    width: 100%;
+  }
+}
+.cid-vv0SR6n4mO .mbr-section-title,
+.cid-vv0SR6n4mO .mbr-section-subtitle {
+  text-align: center;
+}
+.cid-vv0SR6n4mO .mbr-text,
+.cid-vv0SR6n4mO .mbr-section-btn {
+  text-align: center;
 }
 .cid-vuNujwgcwE {
   padding-top: 3rem;
