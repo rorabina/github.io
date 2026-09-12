@@ -7,6 +7,7 @@ on:
     paths:
       - '**.html'
       - 'sw.js'
+  workflow_dispatch:
 
 jobs:
   build-and-update:
@@ -16,21 +17,28 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/setup-node@v4
-
-      - name: Inject Manifest and SW Register Tags into HTML
-        run: |
-          for file in *.html; do
-            if ! grep -q 'rel="manifest"' "$file"; then
-              sed -i 's|</head>|  <link rel="manifest" href="/manifest.json">\n  <script src="/sw-register.js" defer></script>\n</head>|i' "$file"
-              echo "Injected manifest into $file"
-            fi
-          done
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
+
+      - name: Inject Manifest and SW Register Tags into HTML
+        run: |
+          node -e '
+            const fs = require("fs");
+            const files = fs.readdirSync(".").filter(f => f.endsWith(".html"));
+            files.forEach(file => {
+              let content = fs.readFileSync(file, "utf8");
+              if (!content.includes("rel=\"manifest\"")) {
+                const tags = "\n  <link rel=\"manifest\" href=\"/manifest.json\">\n  <script src=\"/sw-register.js\" defer></script>\n";
+                content = content.replace(/<\/head>/i, tags + "</head>");
+                fs.writeFileSync(file, content, "utf8");
+                console.log("Injected PWA tags into " + file);
+              }
+            });
+          '
 
       - name: Run Service Worker generator script
         run: node build-sw.js
