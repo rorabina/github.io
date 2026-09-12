@@ -19,7 +19,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
 
       - name: Inject Manifest and SW Register Tags into HTML
         run: |
@@ -49,14 +49,29 @@ jobs:
 
             files.forEach(file => {
               let content = fs.readFileSync(file, "utf8");
-              if (!content.includes("rel=\"manifest\"")) {
-                const tags = "\n  <link rel=\"manifest\" href=\"/manifest.json\">\n  <script src=\"/sw-register.js\" defer></script>\n";
-                content = content.replace(/<\/head>/i, tags + "</head>");
+              let updated = false;
+
+              // Inject Manifest Tag if missing
+              if (!content.includes("/manifest.json")) {
+                content = content.replace(/<\/head\s*>/i, "\n  <link rel=\"manifest\" href=\"/manifest.json\">\n</head>");
+                updated = true;
+              }
+
+              // Inject SW Register Script Tag if missing
+              if (!content.includes("/sw-register.js")) {
+                content = content.replace(/<\/head\s*>/i, "\n  <script src=\"/sw-register.js\" defer></script>\n</head>");
+                updated = true;
+              }
+
+              if (updated) {
                 fs.writeFileSync(file, content, "utf8");
-                console.log("Injected PWA tags into " + file);
+                console.log("Injected missing PWA tags into " + file);
               }
             });
           '
+
+      - name: Run Service Worker generator script
+        run: node build-sw.js
 
       - name: Commit and push changes
         run: |
