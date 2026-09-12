@@ -1,7 +1,6 @@
 // Placeholder values: build-sw.js will overwrite these automatically on build
-const CACHE_NAME = 'ror-pwa-6efc59e90cc76b8aa79134b7d663c0f2';
+const CACHE_NAME = 'ror-pwa-1789217295212';
 const PRECACHE_ASSETS = [
-  "/",
   "/about.html",
   "/animal-welfare.html",
   "/app.html",
@@ -78,26 +77,15 @@ const PRECACHE_ASSETS = [
   "/assets/parallax/jarallax.js",
   "/assets/smoothscroll/smooth-scroll.js",
   "/assets/socicon/css/styles.css",
-  "/assets/socicon/fonts/socicon.eot",
   "/assets/socicon/fonts/socicon.svg",
-  "/assets/socicon/fonts/socicon.ttf",
-  "/assets/socicon/fonts/socicon.woff",
-  "/assets/socicon/fonts/socicon.woff2",
   "/assets/theme/css/style.css",
   "/assets/theme/js/script.js",
   "/assets/web/assets/mobirise-icons-bold/mobirise-icons-bold.css",
-  "/assets/web/assets/mobirise-icons-bold/mobirise-icons-bold.eot",
   "/assets/web/assets/mobirise-icons-bold/mobirise-icons-bold.svg",
-  "/assets/web/assets/mobirise-icons-bold/mobirise-icons-bold.ttf",
-  "/assets/web/assets/mobirise-icons-bold/mobirise-icons-bold.woff",
-  "/assets/web/assets/mobirise-icons-bold/mobirise-icons-bold.woff2",
   "/assets/web/assets/mobirise-icons2/mobirise2.css",
-  "/assets/web/assets/mobirise-icons2/mobirise2.eot",
   "/assets/web/assets/mobirise-icons2/mobirise2.svg",
-  "/assets/web/assets/mobirise-icons2/mobirise2.ttf",
-  "/assets/web/assets/mobirise-icons2/mobirise2.woff",
-  "/assets/web/assets/mobirise-icons2/mobirise2.woff2",
   "/assets/ytplayer/index.js",
+  "/build-sw.js",
   "/defense-tech.html",
   "/digital-visual-creation.html",
   "/environmental-welfare.html",
@@ -111,8 +99,11 @@ const PRECACHE_ASSETS = [
   "/portfolio.html",
   "/social-welfare.html",
   "/space-tech.html",
+  "/sw-register.js",
+  "/sw.js",
   "/timeline.html",
-  "/web-dev.html"
+  "/web-dev.html",
+  "https://fonts.googleapis.com/css2?family=Jost:wght@100;200;300;400;500;600;700;800;900&display=swap"
 ];
 
 // 1. Install Event: Cache assets individually so 1 missing file won't break the entire app
