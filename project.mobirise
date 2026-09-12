@@ -95,7 +95,7 @@
     "imageResize": true,
     "chatbutton": {},
     "favicon": "@PROJECT_PATH@/assets/images/20260910-143919-128x128_1.png",
-    "mbrsiteDomain": "4qfdnlvrar",
+    "mbrsiteDomain": "pkrutuw1de",
     "usedWebp": false,
     "cssOptimize": false,
     "lazyLoad": false,
@@ -110,7 +110,7 @@
     "robotsText": "User-agent: *\r\nDisallow: /cgi-bin\r\n",
     "cookiesAlert": false,
     "gdpr": false,
-    "google-analytics": "<link rel=\"manifest\" href=\"/manifest.json\">\n<meta name=\"apple-mobile-web-app-capable\" content=\"yes\">\n<meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black-translucent\">\n<meta name=\"apple-mobile-web-app-title\" content=\"RoR App\">\n<link rel=\"apple-touch-icon\" href=\"assets/images/logo.png\">"
+    "google-analytics": "<link rel=\"manifest\" href=\"/manifest.json\">\n<meta name=\"apple-mobile-web-app-capable\" content=\"yes\">\n<meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black-translucent\">\n<meta name=\"apple-mobile-web-app-title\" content=\"RoR App\">\n<link rel=\"apple-touch-icon\" href=\"assets/images/logo-rorabina.png\">"
   },
   "pages": {
     "index.html": {
