@@ -1,4 +1,4 @@
-name: Auto Update Service Worker Precache
+name: Auto Update Service Worker Precache & Inject Manifest
 
 on:
   push:
@@ -18,8 +18,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Inject Manifest and SW Register Tags into HTML
+        run: |
+          for file in *.html; do
+            if ! grep -q 'rel="manifest"' "$file"; then
+              sed -i 's|</head>|  <link rel="manifest" href="/manifest.json">\n  <script src="/sw-register.js" defer></script>\n</head>|i' "$file"
+              echo "Injected manifest into $file"
+            fi
+          done
+
       - name: Set up Node.js
-        uses: actions/checkout@v4
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
 
@@ -30,7 +39,7 @@ jobs:
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add sw.js
-          git diff --staged --quiet || (git commit -m "Auto-update sw.js precache list [skip ci]" && git push)
+          git add .
+          git diff --staged --quiet || (git commit -m "Auto-inject PWA manifest & update sw.js precache list [skip ci]" && git push)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
