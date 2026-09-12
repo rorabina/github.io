@@ -1,32 +1,8 @@
-// Keep your dynamic build hash here!
-const CACHE_NAME = 'ror-pwa-12535d95fd776c823b265c4dbe120357bbc866a1';
+// Placeholder values: build-sw.js will overwrite these automatically on build
+const CACHE_NAME = 'ror-pwa-initial';
+const PRECACHE_ASSETS = [];
 
-// Comprehensive list of all site pages and core assets to precache
-const PRECACHE_ASSETS = [
-  '/',
-  '/index.html',
-  '/about.html',
-  '/animal-welfare.html',
-  '/app.html',
-  '/cuisines.html',
-  '/defense-tech.html',
-  '/digital-visual-creation.html',
-  '/environmental-welfare.html',
-  '/events.html',
-  '/insights.html',
-  '/interests.html',
-  '/manifest.json',
-  '/merch.html',
-  '/photography.html',
-  '/portfolio.html',
-  '/social-welfare.html',
-  '/space-tech.html',
-  '/timeline.html',
-  '/travel.html',
-  '/web-dev.html',
-];
-
-// 1. Install Event: Cache all pages immediately & force activation
+// 1. Install Event: Cache all auto-detected pages immediately & force activation
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
@@ -36,27 +12,23 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// 2. Activate Event: Clear old caches when CACHE_NAME hash updates
+// 2. Activate Event: Delete old cache buckets when CACHE_NAME updates
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
+    caches.keys().then((keys) => {
       return Promise.all(
-        cacheNames.map((cache) => {
-          if (cache !== CACHE_NAME) {
-            return caches.delete(cache);
-          }
-        })
+        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
       );
     }).then(() => self.clients.claim())
   );
 });
 
-// 3. Fetch Event: Network-First for HTML, Cache-First for static files
+// 3. Fetch Event: Network-First for HTML, Cache-First for static assets
 self.addEventListener('fetch', (event) => {
   const request = event.request;
   if (!request.url.startsWith('http')) return;
 
-  // HTML Navigation: Try network first (updates layout), fall back to precached HTML if offline
+  // HTML Navigation Strategy: Try network first, fall back to precached HTML if offline
   if (request.mode === 'navigate' || request.headers.get('accept')?.includes('text/html')) {
     event.respondWith(
       fetch(request)
@@ -76,7 +48,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Static Assets: Try cache first, fall back to network
+  // Static Assets Strategy: Cache-First with network fallback
   event.respondWith(
     caches.match(request).then((cachedResponse) => {
       if (cachedResponse) {
