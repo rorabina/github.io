@@ -1,11 +1,49 @@
-const CACHE_NAME = 'ror-pwa-v2';
+const CACHE_NAME = 'ror-pwa-v3';
 
-// Install step - activate immediately
+// List all HTML pages and static assets to precache automatically
+const PRECACHE_ASSETS = [
+  '/',
+  '/index.html',
+  '/about.html',
+  '/animal-welfare.html',
+  '/app.html',
+  '/cuisines.html',
+  '/defense-tech.html',
+  '/digital-visual-creation.html',
+  '/environmental-welfare.html',
+  '/events.html',
+  '/insights.html',
+  '/install-app.html',
+  '/interests.html',
+  '/local-adventures.html',
+  '/manifest.json',
+  '/merch.html',
+  '/national-interests.html',
+  '/page2.html',
+  '/photography.html',
+  '/portfolio-creative-works.html',
+  '/portfolio.html',
+  '/social-welfare.html',
+  '/space-tech.html',
+  '/timeline.html',
+  '/travel.html',
+  '/upcoming-events.html',
+  '/web-dev.html',
+  '/works.html'
+];
+
+// Install Event: Downloads and caches all specified pages immediately
 self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      console.log('Precaching all site pages...');
+      return cache.addAll(PRECACHE_ASSETS);
+    })
+  );
   self.skipWaiting();
 });
 
-// Activate step - take control of all open pages immediately
+// Activate Event: Deletes old caches when CACHE_NAME updates
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
@@ -17,9 +55,8 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch step - Serve from cache first, otherwise fetch from network and store in cache
+// Fetch Event: Serves from cache first, falls back to network
 self.addEventListener('fetch', (event) => {
-  // Only handle HTTP/HTTPS requests
   if (!event.request.url.startsWith('http')) return;
 
   event.respondWith(
@@ -29,7 +66,6 @@ self.addEventListener('fetch', (event) => {
       }
 
       return fetch(event.request).then((networkResponse) => {
-        // Check for valid network response before caching
         if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
           return networkResponse;
         }
