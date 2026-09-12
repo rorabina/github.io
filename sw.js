@@ -115,12 +115,21 @@ const PRECACHE_ASSETS = [
   "/web-dev.html"
 ];
 
-// 1. Install Event: Cache all auto-detected pages immediately & force activation
+// 1. Install Event: Cache assets individually so 1 missing file won't break the entire app
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(PRECACHE_ASSETS);
+    caches.open(CACHE_NAME).then(async (cache) => {
+      // Loop through all assets and cache them individually
+      await Promise.allSettled(
+        PRECACHE_ASSETS.map(async (url) => {
+          try {
+            await cache.add(url);
+          } catch (err) {
+            console.warn(`Failed to precache asset: ${url}`, err);
+          }
+        })
+      );
     })
   );
 });
