@@ -1,66 +1,65 @@
 const fs = require('fs');
 const path = require('path');
-const crypto = require('crypto');
 
-const rootDir = __dirname;
-const swPath = path.join(rootDir, 'sw.js');
+// 1. Define local directories and files to scan
+const PUBLIC_DIR = './';
+const EXCLUDE_DIRS = ['.git', '.github', 'node_modules'];
 
-// Recursively get all files in a directory
-function getFilesRecursively(dir, fileList = []) {
+function getFiles(dir, fileList = []) {
   const files = fs.readdirSync(dir);
-  for (const file of files) {
+  files.forEach(file => {
     const filePath = path.join(dir, file);
     const stat = fs.statSync(filePath);
+    
     if (stat.isDirectory()) {
-      // Ignore hidden directories like .git or .github
-      if (!file.startsWith('.')) {
-        getFilesRecursively(filePath, fileList);
+      if (!EXCLUDE_DIRS.includes(file)) {
+        getFiles(filePath, fileList);
       }
     } else {
-      fileList.push(filePath);
+      // Include HTML, CSS, JS, JSON, and common image types
+      if (/\.(html|css|js|json|png|jpg|jpeg|svg|ico|webp)$/i.test(file)) {
+        let relativePath = path.relative(PUBLIC_DIR, filePath).replace(/\\/g, '/');
+        if (!relativePath.startsWith('/')) {
+          relativePath = '/' + relativePath;
+        }
+        fileList.push(relativePath);
+      }
     }
-  }
+  });
   return fileList;
 }
 
-// Get all site assets (.html, .css, .js, images, fonts)
-const allFiles = getFilesRecursively(rootDir);
+const localAssets = getFiles(PUBLIC_DIR);
 
-const precacheAssets = allFiles
-  .map(file => '/' + path.relative(rootDir, file).replace(/\\/g, '/'))
-  .filter(assetPath => {
-    // Exclude system/build files from precache
-    if (assetPath.startsWith('/.git') || assetPath.startsWith('/.github')) return false;
-    if (assetPath === '/build-sw.js' || assetPath === '/sw-register.js') return false;
-    
-    // Include HTML, manifest, and all static assets in /assets/
-    return (
-      assetPath.endsWith('.html') ||
-      assetPath === '/manifest.json' ||
-      assetPath.startsWith('/assets/')
-    );
-  });
+// 2. Add external dependencies (like Google Fonts) explicitly
+const externalAssets = [
+  'https://fonts.googleapis.com/css2?family=Jost:wght@100;200;300;400;500;600;700;800;900&display=swap'
+];
 
-// Add root route '/' explicitly
-if (!precacheAssets.includes('/')) {
-  precacheAssets.unshift('/');
+const allAssets = Array.from(new Set([...localAssets, ...externalAssets]));
+
+// 3. Generate a unique version hash based on asset count & timestamp
+const cacheVersion = 'ror-pwa-' + Date.now();
+
+// 4. Read and update sw.js template
+const swTemplatePath = './sw.js';
+if (fs.existsSync(swTemplatePath)) {
+  let swContent = fs.readFileSync(swTemplatePath, 'utf8');
+
+  // Replace cache name
+  swContent = swContent.replace(
+    /const CACHE_NAME = ['"].*?['"];/,
+    `const CACHE_NAME = '${cacheVersion}';`
+  );
+
+  // Replace precache array
+  swContent = swContent.replace(
+    /const PRECACHE_ASSETS = \[[\s\S]*?\];/,
+    `const PRECACHE_ASSETS = ${JSON.stringify(allAssets, null, 2)};`
+  );
+
+  fs.writeFileSync(swTemplatePath, swContent, 'utf8');
+  console.log(`Successfully updated sw.js with ${allAssets.length} assets and cache name ${cacheVersion}`);
+} else {
+  console.error('Error: sw.js template not found in root directory.');
 }
-
-// Generate dynamic cache name MD5 hash
-const cacheHash = crypto.createHash('md5').update(Date.now().toString()).digest('hex');
-const cacheName = `ror-pwa-${cacheHash}`;
-
-let swContent = fs.readFileSync(swPath, 'utf8');
-
-swContent = swContent.replace(
-  /const CACHE_NAME = ['"].*?['"];/,
-  `const CACHE_NAME = '${cacheName}';`
-);
-
-swContent = swContent.replace(
-  /const PRECACHE_ASSETS = \[[\s\S]*?\];/,
-  `const PRECACHE_ASSETS = ${JSON.stringify(precacheAssets, null, 2)};`
-);
-
-fs.writeFileSync(swPath, swContent, 'utf8');
-console.log(`Updated sw.js with ${precacheAssets.length} assets. Cache ID: ${cacheName}`);
