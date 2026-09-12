@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ror-pwa-1789231935248';
+const CACHE_NAME = 'ror-pwa-1789233604635';
 const PRECACHE_ASSETS = [
   "/about.html",
   "/animal-welfare.html",
@@ -28,11 +28,13 @@ const PRECACHE_ASSETS = [
   "/assets/images/hashes.json",
   "/assets/images/logo-rorabina-512x512.png",
   "/assets/images/mbr-1-1256x837.jpg",
+  "/assets/images/mbr-1-1256x839.jpg",
   "/assets/images/mbr-1-1920x1280.jpg",
   "/assets/images/mbr-1-192x128.jpeg",
   "/assets/images/mbr-1-192x144.jpeg",
   "/assets/images/mbr-1-600x401.jpg",
   "/assets/images/mbr-1256x690.png",
+  "/assets/images/mbr-1256x742.jpg",
   "/assets/images/mbr-1256x750.jpg",
   "/assets/images/mbr-1256x837.jpg",
   "/assets/images/mbr-1256x839.jpg",
@@ -88,6 +90,7 @@ const PRECACHE_ASSETS = [
   "/assets/ytplayer/index.js",
   "/build-sw.js",
   "/defense-tech.html",
+  "/design-concepts.html",
   "/digital-visual-creation.html",
   "/environmental-welfare.html",
   "/events.html",
@@ -104,6 +107,7 @@ const PRECACHE_ASSETS = [
   "/sw.js",
   "/test.html",
   "/timeline.html",
+  "/visual-artworks.html",
   "/web-dev.html",
   "https://fonts.googleapis.com/css2?family=Jost:wght@100;200;300;400;500;600;700;800;900&display=swap"
 ];
