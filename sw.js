@@ -1,6 +1,29 @@
 // Placeholder values: build-sw.js will overwrite these automatically on build
-const CACHE_NAME = 'ror-pwa-initial';
-const PRECACHE_ASSETS = [];
+const CACHE_NAME = 'ror-pwa-f2f8c03413bc61f099d0faf365ddf42c';
+const PRECACHE_ASSETS = [
+  "/",
+  "/manifest.json",
+  "/about.html",
+  "/animal-welfare.html",
+  "/app.html",
+  "/cuisines.html",
+  "/defense-tech.html",
+  "/digital-visual-creation.html",
+  "/environmental-welfare.html",
+  "/events.html",
+  "/index.html",
+  "/insights.html",
+  "/interests.html",
+  "/local-travels.html",
+  "/merch.html",
+  "/photography.html",
+  "/portfolio.html",
+  "/social-welfare.html",
+  "/space-tech.html",
+  "/timeline.html",
+  "/travel.html",
+  "/web-dev.html"
+];
 
 // 1. Install Event: Cache all auto-detected pages immediately & force activation
 self.addEventListener('install', (event) => {
