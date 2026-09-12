@@ -81,6 +81,7 @@ const PRECACHE_ASSETS = [
   "\"\"/assets/images/20260910-143919-1200x1200.jpg",
   "\"\"/assets/images/mbr-600x350.jpg",
   "\"\"/assets/images/mbr-1256x750.jpg",
+  "\"\"/assets/images/20260912-121008-815x815.png",
   "\"\"/assets/images/20260910-165627-815x815.jpg",
   "\"\"/assets/images/20260908-170723-128x128.png",
   "\"\"/assets/images/13.jpg",
