@@ -13,40 +13,57 @@ if ('serviceWorker' in navigator) {
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
-
-  // If the user lands directly on app.html, trigger the pop-up immediately
-  if (window.location.pathname.includes('app.html')) {
-    triggerInstallPrompt();
-  }
+  console.log('PWA Install prompt captured and ready.');
 });
 
-// 3. Function to trigger the installation pop-up
-async function triggerInstallPrompt() {
-  if (deferredPrompt) {
-    // Small delay ensures the page renders completely before showing the prompt
-    setTimeout(async () => {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      console.log(`Installation prompt choice: ${outcome}`);
-      deferredPrompt = null;
-    }, 500);
-  }
-}
-
-// 4. Check on page load if landing on app.html with a prepared prompt
+// 3. Attach button listeners when on app.html
 document.addEventListener('DOMContentLoaded', () => {
   if (window.location.pathname.includes('app.html')) {
-    // Wire up any manual "Install Now" button on app.html as a backup
-    const pageButtons = document.querySelectorAll('.pwa-install-btn, .btn-install, a[href*="install"]');
-    pageButtons.forEach((btn) => {
-      btn.onclick = (e) => {
-        e.preventDefault();
-        triggerInstallPrompt();
-      };
+
+    // Target the Android button by text content or classes
+    const androidButtons = Array.from(document.querySelectorAll('a, button')).filter((el) => {
+      const text = el.textContent.trim().toLowerCase();
+      return text === 'android' || text.includes('download on android') || el.classList.contains('pwa-android-btn');
     });
 
-    if (deferredPrompt) {
-      triggerInstallPrompt();
-    }
+    // Target the iOS button by text content or classes
+    const iosButtons = Array.from(document.querySelectorAll('a, button')).filter((el) => {
+      const text = el.textContent.trim().toLowerCase();
+      return text === 'ios' || text.includes('apple') || text.includes('iphone') || el.classList.contains('pwa-ios-btn');
+    });
+
+    // Handle Android Button Click
+    androidButtons.forEach((btn) => {
+      btn.addEventListener('click', async (e) => {
+        if (deferredPrompt) {
+          e.preventDefault();
+          deferredPrompt.prompt(); // Trigger native install dialog
+          
+          const { outcome } = await deferredPrompt.userChoice;
+          console.log(`User prompt choice: ${outcome}`);
+          deferredPrompt = null;
+        } else {
+          // If prompt isn't ready or app is already installed, fallback to scrolling to Android text
+          const androidSection = document.querySelector('h3:nth-of-type(1)') || document.body;
+          androidSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+
+    // Handle iOS Button Click -> Scroll down to Safari instructions
+    iosButtons.forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        // Finds the iOS section heading on app.html and scrolls into view smoothly
+        const iosSection = Array.from(document.querySelectorAll('h3, h2, div')).find((el) => 
+          el.textContent.toLowerCase().includes('ios') || el.textContent.toLowerCase().includes('apple')
+        );
+
+        if (iosSection) {
+          iosSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+
   }
 });
