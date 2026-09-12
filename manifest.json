@@ -2,7 +2,7 @@
   "id": "/app.html",
   "name": "Republic of Rabina",
   "short_name": "RoR",
-  "start_url": "/app.html",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
