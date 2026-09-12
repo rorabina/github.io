@@ -1,5 +1,5 @@
 // Keep your dynamic build hash here!
-const CACHE_NAME = 'ror-pwa-622b6de0d272e2187af0e325a6beb5feeac53e02';
+const CACHE_NAME = 'ror-pwa-5b8d487efe7bd6de189924b8342a55e5d99f84ac';
 
 const ASSETS_TO_CACHE = [
   '/',
