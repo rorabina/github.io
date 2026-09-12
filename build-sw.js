@@ -5,19 +5,17 @@ const crypto = require('crypto');
 const rootDir = __dirname;
 const swPath = path.join(rootDir, 'sw.js');
 
-// 1. Scan directory and automatically get all .html files
+// Automatically scan for all .html files in the repository root
 const htmlFiles = fs.readdirSync(rootDir)
   .filter(file => file.endsWith('.html'))
   .map(file => `/${file}`);
 
-// Ensure root '/' and manifest are included
 const precacheAssets = Array.from(new Set(['/', '/manifest.json', ...htmlFiles]));
 
-// 2. Generate a unique hash for CACHE_NAME based on current time
+// Generate dynamic cache name
 const cacheHash = crypto.createHash('md5').update(Date.now().toString()).digest('hex');
 const cacheName = `ror-pwa-${cacheHash}`;
 
-// 3. Read current sw.js and replace CACHE_NAME & PRECACHE_ASSETS
 let swContent = fs.readFileSync(swPath, 'utf8');
 
 swContent = swContent.replace(
@@ -31,4 +29,4 @@ swContent = swContent.replace(
 );
 
 fs.writeFileSync(swPath, swContent, 'utf8');
-console.log(`Successfully updated sw.js with ${precacheAssets.length} assets. Cache ID: ${cacheName}`);
+console.log(`Updated sw.js with ${precacheAssets.length} assets. Cache ID: ${cacheName}`);
