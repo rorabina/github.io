@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ror-pwa-f18c6028dda4f49aa1e6790305077733047c8e56';
+const CACHE_NAME = 'ror-pwa-a25f9eecfa9008709c087d97340474c39c7f474f';
 
 // Precache list with clean string paths
 const PRECACHE_ASSETS = [
