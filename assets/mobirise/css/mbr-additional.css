@@ -11832,6 +11832,63 @@ a {
 .cid-vtOkj0QbYz .item-content .item-footer {
   margin-top: auto;
 }
+.cid-vuYtsgtV2k {
+  display: flex;
+  background-color: #ffffff;
+}
+.cid-vuYtsgtV2k .mbr-fallback-image.disabled {
+  display: none;
+}
+.cid-vuYtsgtV2k .mbr-fallback-image {
+  display: block;
+  background-size: cover;
+  background-position: center center;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+}
+.cid-vuYtsgtV2k .content-wrap {
+  padding: 5rem 1rem;
+}
+@media (min-width: 992px) {
+  .cid-vuYtsgtV2k .content-wrap {
+    padding: 5rem 3rem;
+  }
+}
+@media (min-width: 768px) {
+  .cid-vuYtsgtV2k {
+    align-items: center;
+  }
+  .cid-vuYtsgtV2k .row {
+    justify-content: center;
+  }
+}
+@media (max-width: 991px) and (min-width: 768px) {
+  .cid-vuYtsgtV2k .content-wrap {
+    min-width: 50%;
+  }
+}
+@media (max-width: 767px) {
+  .cid-vuYtsgtV2k {
+    -webkit-align-items: center;
+    align-items: center;
+  }
+  .cid-vuYtsgtV2k .mbr-row {
+    -webkit-justify-content: center;
+    justify-content: center;
+  }
+  .cid-vuYtsgtV2k .content-wrap {
+    width: 100%;
+  }
+}
+.cid-vuYtsgtV2k .mbr-section-title {
+  text-align: center;
+}
+.cid-vuYtsgtV2k .mbr-text,
+.cid-vuYtsgtV2k .mbr-section-btn {
+  text-align: center;
+}
 .cid-vuNujwgcwE {
   padding-top: 3rem;
   padding-bottom: 0rem;
