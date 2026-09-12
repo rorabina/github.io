@@ -1,9 +1,9 @@
-name: Inject PWA Tags and Auto-Update Cache List
+name: Inject PWA Cache & Assets
 
 on:
   push:
     branches:
-      - main  # Change to 'master' if your default branch is master
+      - main
 
 jobs:
   inject-pwa:
@@ -15,42 +15,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Inject PWA tags into HTML files
+      - name: Inject Dynamic Cache Name & Asset List
         run: |
-          PWA_TAGS='<link rel="manifest" href="/manifest.json">\n<script src="/sw-register.js"></script>'
-          
-          find . -maxdepth 2 -name "*.html" -exec bash -c '
-            for file; do
-              if ! grep -q "manifest.json" "$file"; then
-                sed -i "s|</head>|  '"$PWA_TAGS"'\n</head>|i" "$file"
-                echo "Injected PWA tags into $file"
-              fi
-            done
-          ' bash {} +
+          # 1. Replace CACHE_NAME with unique commit SHA
+          sed -i "s/const CACHE_NAME = '[^']*';/const CACHE_NAME = 'ror-pwa-${{ github.sha }}';/g" sw.js
 
-      - name: Automatically update sw.js precache list
-        run: |
-          # Find all HTML, CSS, JS, Images, and Web Fonts across the site
-          FILES_JSON=$(find . -type f \( -name "*.html" -o -name "*.css" -o -name "*.js" -o -name "*.jpg" -o -name "*.png" -o -name "*.svg" -o -name "*.woff2" \) -not -path '*/.*' | sed 's|^\.|""|' | jq -R . | jq -s .)
-          
-          # Inject the files directly into sw.js PRECACHE_ASSETS variable
-          node -e '
-            const fs = require("fs");
-            const files = '"$FILES_JSON"';
-            files.unshift("/", "/manifest.json");
-            const uniqueFiles = [...new Set(files)];
-            
-            let swContent = fs.readFileSync("sw.js", "utf8");
-            swContent = swContent.replace(
-              /const PRECACHE_ASSETS = \[[\s\S]*?\];/,
-              `const PRECACHE_ASSETS = ${JSON.stringify(uniqueFiles, null, 2)};`
-            );
-            fs.writeFileSync("sw.js", swContent);
-          '
+          # 2. Automatically generate array of HTML, CSS, JS, font, and asset files
+          FILES=$(find . -type f \( -name "*.html" -o -name "*.css" -o -name "*.js" -o -name "*.json" -o -name "*.woff2" -o -name "*.svg" -o -name "*.png" -o -name "*.jpg" \) ! -path "./.git/*" ! -path "./.github/*" | sed 's|^\.|""|' | tr '\n' ',' | sed 's/,$//')
+
+          # 3. Format as valid JS array
+          FORMATTED_ASSETS=$(echo "$FILES" | sed 's/""\//"\//g')
+
+          # 4. Inject asset array into sw.js
+          sed -i "s|const PRECACHE_ASSETS = \[.*\];|const PRECACHE_ASSETS = [$FORMATTED_ASSETS];|g" sw.js
 
       - name: Commit and push changes
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add *.html sw.js
-          git diff --quiet && git diff --staged --quiet || (git commit -m "ci: update HTML tags and full asset precache list" && git push)
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "auto: update PWA cache name and asset precache list [skip ci]"
