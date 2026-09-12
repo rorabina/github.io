@@ -12207,6 +12207,41 @@ a {
     padding: 1rem;
   }
 }
+.cid-vv0UQjnEhL {
+  padding-top: 10rem;
+  padding-bottom: 0rem;
+  background-color: #ffffff;
+}
+.cid-vv0UQjnEhL .mbr-fallback-image.disabled {
+  display: none;
+}
+.cid-vv0UQjnEhL .mbr-fallback-image {
+  display: block;
+  background-size: cover;
+  background-position: center center;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+}
+.cid-vv0UQjnEhL .item-wrapper {
+  display: flex;
+  margin-bottom: 2rem;
+}
+@media (max-width: 767px) {
+  .cid-vv0UQjnEhL .item-wrapper {
+    margin-bottom: 1rem;
+  }
+}
+.cid-vv0UQjnEhL .content-head {
+  max-width: 800px;
+}
+.cid-vv0UQjnEhL .img-wrapper {
+  padding-right: 1.5rem;
+}
+.cid-vv0UQjnEhL .img-wrapper img {
+  width: 6rem;
+}
 .cid-vtQLfTaRnc {
   padding-top: 7rem;
   padding-bottom: 0rem;
