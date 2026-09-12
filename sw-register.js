@@ -1,6 +1,6 @@
 let deferredPrompt;
 
-// 1. Register Service Worker globally across all pages
+// 1. Register Service Worker globally
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
@@ -9,56 +9,56 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// 2. Capture Chrome's install prompt event in the background
+// 2. Capture Chrome's install event globally
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
-  console.log('PWA Install prompt captured and ready.');
+  console.log('PWA beforeinstallprompt successfully captured.');
 });
 
-// 3. Attach button listeners when on app.html
+// 3. Attach event listeners on app.html
 document.addEventListener('DOMContentLoaded', () => {
   if (window.location.pathname.includes('app.html')) {
 
-    // Target the Android button by text content or classes
-    const androidButtons = Array.from(document.querySelectorAll('a, button')).filter((el) => {
-      const text = el.textContent.trim().toLowerCase();
-      return text === 'android' || text.includes('download on android') || el.classList.contains('pwa-android-btn');
+    // Function to handle the Android install click/touch
+    const handleAndroidInstall = async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`User prompt response: ${outcome}`);
+        deferredPrompt = null;
+      } else {
+        // Fallback if prompt is unavailable or app is already installed
+        alert('App installation is not available right now or the app is already installed on this device.');
+      }
+    };
+
+    // Find the Android button by flexible query selectors
+    const androidButtons = Array.from(document.querySelectorAll('a, button, .btn')).filter((el) => {
+      const text = el.innerText ? el.innerText.trim().toLowerCase() : '';
+      return text.includes('android') || el.classList.contains('pwa-android-btn');
     });
 
-    // Target the iOS button by text content or classes
-    const iosButtons = Array.from(document.querySelectorAll('a, button')).filter((el) => {
-      const text = el.textContent.trim().toLowerCase();
-      return text === 'ios' || text.includes('apple') || text.includes('iphone') || el.classList.contains('pwa-ios-btn');
-    });
-
-    // Handle Android Button Click
+    // Attach both click and touchend listeners for Android mobile responsiveness
     androidButtons.forEach((btn) => {
-      btn.addEventListener('click', async (e) => {
-        if (deferredPrompt) {
-          e.preventDefault();
-          deferredPrompt.prompt(); // Trigger native install dialog
-          
-          const { outcome } = await deferredPrompt.userChoice;
-          console.log(`User prompt choice: ${outcome}`);
-          deferredPrompt = null;
-        } else {
-          // If prompt isn't ready or app is already installed, fallback to scrolling to Android text
-          const androidSection = document.querySelector('h3:nth-of-type(1)') || document.body;
-          androidSection.scrollIntoView({ behavior: 'smooth' });
-        }
-      });
+      btn.addEventListener('click', handleAndroidInstall);
     });
 
-    // Handle iOS Button Click -> Scroll down to Safari instructions
+    // iOS Button Action -> Smooth scroll down to Safari steps
+    const iosButtons = Array.from(document.querySelectorAll('a, button, .btn')).filter((el) => {
+      const text = el.innerText ? el.innerText.trim().toLowerCase() : '';
+      return text.includes('ios') || text.includes('apple');
+    });
+
     iosButtons.forEach((btn) => {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
-        // Finds the iOS section heading on app.html and scrolls into view smoothly
-        const iosSection = Array.from(document.querySelectorAll('h3, h2, div')).find((el) => 
-          el.textContent.toLowerCase().includes('ios') || el.textContent.toLowerCase().includes('apple')
+        const iosSection = Array.from(document.querySelectorAll('h2, h3, div')).find((el) =>
+          el.innerText && el.innerText.toLowerCase().includes('ios')
         );
-
         if (iosSection) {
           iosSection.scrollIntoView({ behavior: 'smooth' });
         }
