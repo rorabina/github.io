@@ -116,12 +116,12 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// 3. Fetch Event: Network-First for HTML, Cache-First for static assets
+// 3. Fetch Event: Network-First for HTML, Cache-First with dynamic caching for static & external assets
 self.addEventListener('fetch', (event) => {
   const request = event.request;
   if (!request.url.startsWith('http')) return;
 
-  // HTML Navigation Strategy: Try network first, fall back to precached HTML if offline
+  // HTML Navigation Strategy: Network-First, fallback to precached HTML if offline
   if (request.mode === 'navigate' || request.headers.get('accept')?.includes('text/html')) {
     event.respondWith(
       fetch(request)
@@ -141,18 +141,21 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Static Assets Strategy: Cache-First with network fallback
+  // Static & External Asset Strategy (CSS, JS, Fonts, CDN Icons): Cache-First + Dynamic Cache
   event.respondWith(
     caches.match(request).then((cachedResponse) => {
       if (cachedResponse) {
         return cachedResponse;
       }
       return fetch(request).then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200) {
+        // Dynamically store external assets (fonts, icons, stylesheets) in cache when fetched online
+        if (networkResponse && networkResponse.status === 200 && networkResponse.type !== 'opaque') {
           const responseClone = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(request, responseClone));
         }
         return networkResponse;
+      }).catch(() => {
+        // Optional fallback for missing assets
       });
     })
   );
