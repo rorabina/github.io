@@ -1,10 +1,15 @@
 let deferredPrompt;
 
-// 1. Register Service Worker globally
+// 1. Register Service Worker globally with dynamic update check
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
-      .then((reg) => console.log('Service Worker registered:', reg.scope))
+      .then((registration) => {
+        console.log('Service Worker registered:', registration.scope);
+        
+        // Force immediate check for updated sw.js on page navigation
+        registration.update();
+      })
       .catch((err) => console.error('Service Worker registration failed:', err));
   });
 }
@@ -42,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return text.includes('android') || el.classList.contains('pwa-android-btn');
     });
 
-    // Attach both click and touchend listeners for Android mobile responsiveness
+    // Attach click listener for Android button
     androidButtons.forEach((btn) => {
       btn.addEventListener('click', handleAndroidInstall);
     });
