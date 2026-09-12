@@ -25,7 +25,28 @@ jobs:
         run: |
           node -e '
             const fs = require("fs");
-            const files = fs.readdirSync(".").filter(f => f.endsWith(".html"));
+            const path = require("path");
+
+            function getHtmlFiles(dir) {
+              let results = [];
+              const list = fs.readdirSync(dir);
+              list.forEach(file => {
+                const filePath = path.join(dir, file);
+                const stat = fs.statSync(filePath);
+                if (stat && stat.isDirectory()) {
+                  if (!file.startsWith(".") && file !== "node_modules") {
+                    results = results.concat(getHtmlFiles(filePath));
+                  }
+                } else if (file.endsWith(".html")) {
+                  results.push(filePath);
+                }
+              });
+              return results;
+            }
+
+            const files = getHtmlFiles(".");
+            console.log("Found HTML files:", files);
+
             files.forEach(file => {
               let content = fs.readFileSync(file, "utf8");
               if (!content.includes("rel=\"manifest\"")) {
@@ -37,14 +58,11 @@ jobs:
             });
           '
 
-      - name: Run Service Worker generator script
-        run: node build-sw.js
-
       - name: Commit and push changes
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add *.html sw.js
+          git add -A
           git diff --staged --quiet || (git commit -m "Auto-inject PWA manifest & update sw.js precache list [skip ci]" && git push)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
