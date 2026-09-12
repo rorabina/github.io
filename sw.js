@@ -1,5 +1,5 @@
 // Placeholder values: build-sw.js will overwrite these automatically on build
-const CACHE_NAME = 'ror-pwa-073c07eb3f9c70764f01df5563829edf';
+const CACHE_NAME = 'ror-pwa-2d824b97792aea34af2c2d9f8b424af9';
 const PRECACHE_ASSETS = [
   "/",
   "/about.html",
