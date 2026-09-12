@@ -1,5 +1,5 @@
 // Keep your dynamic build hash here!
-const CACHE_NAME = 'ror-pwa-9dd5a5034134097dc9706e6b8d977fdb0b6034f3';
+const CACHE_NAME = 'ror-pwa-cb7232ced8cd98ee04884caa12bba12427d61554';
 
 // Comprehensive list of all site pages and core assets to precache
 const PRECACHE_ASSETS = [
