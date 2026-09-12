@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ror-pwa-v3';
+const CACHE_NAME = 'ror-pwa-v4';
 
 // List all HTML pages and static assets to precache automatically
 const PRECACHE_ASSETS = [
