@@ -1,50 +1,59 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 	<url>
-		<loc>https://rjrabina.vercel.app/index.html</loc>
+		<loc>https://rorabina.github.io/index.html</loc>
 	</url>
 	<url>
-		<loc>https://rjrabina.vercel.app/about.html</loc>
+		<loc>https://rorabina.github.io/about.html</loc>
 	</url>
 	<url>
-		<loc>https://rjrabina.vercel.app/install-app.html</loc>
+		<loc>https://rorabina.github.io/timeline.html</loc>
 	</url>
 	<url>
-		<loc>https://rjrabina.vercel.app/timeline.html</loc>
+		<loc>https://rorabina.github.io/events.html</loc>
 	</url>
 	<url>
-		<loc>https://rjrabina.vercel.app/events.html</loc>
+		<loc>https://rorabina.github.io/merch.html</loc>
 	</url>
 	<url>
-		<loc>https://rjrabina.vercel.app/merch.html</loc>
+		<loc>https://rorabina.github.io/animal-welfare.html</loc>
 	</url>
 	<url>
-		<loc>https://rjrabina.vercel.app/animal-welfare.html</loc>
+		<loc>https://rorabina.github.io/environmental-welfare.html</loc>
 	</url>
 	<url>
-		<loc>https://rjrabina.vercel.app/environmental-welfare.html</loc>
+		<loc>https://rorabina.github.io/social-welfare.html</loc>
 	</url>
 	<url>
-		<loc>https://rjrabina.vercel.app/social-welfare.html</loc>
+		<loc>https://rorabina.github.io/space-tech.html</loc>
 	</url>
 	<url>
-		<loc>https://rjrabina.vercel.app/space-tech.html</loc>
+		<loc>https://rorabina.github.io/defense-tech.html</loc>
 	</url>
 	<url>
-		<loc>https://rjrabina.vercel.app/defense-tech.html</loc>
+		<loc>https://rorabina.github.io/photography.html</loc>
 	</url>
 	<url>
-		<loc>https://rjrabina.vercel.app/interests.html</loc>
+		<loc>https://rorabina.github.io/web-dev.html</loc>
 	</url>
 	<url>
-		<loc>https://rjrabina.vercel.app/digital-visual-creation.html</loc>
+		<loc>https://rorabina.github.io/app.html</loc>
 	</url>
 	<url>
-		<loc>https://rjrabina.vercel.app/photography.html</loc>
+		<loc>https://rorabina.github.io/insights.html</loc>
 	</url>
 	<url>
-		<loc>https://rjrabina.vercel.app/local-adventures.html</loc>
+		<loc>https://rorabina.github.io/portfolio.html</loc>
 	</url>
 	<url>
-		<loc>https://rjrabina.vercel.app/portfolio-creative-works.html</loc>
+		<loc>https://rorabina.github.io/local-travels.html</loc>
+	</url>
+	<url>
+		<loc>https://rorabina.github.io/test.html</loc>
+	</url>
+	<url>
+		<loc>https://rorabina.github.io/design-concepts.html</loc>
+	</url>
+	<url>
+		<loc>https://rorabina.github.io/visual-artworks.html</loc>
 	</url>
 </urlset>
