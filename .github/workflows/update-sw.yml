@@ -4,16 +4,22 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:
+    paths-ignore:
+      - 'sw.js'
+      - 'build-sw.js'
+      - 'manifest.json'
+      - '**.md'
 
-permissions:
-  contents: write
+concurrency:
+  group: sw-update-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  build-and-update:
+  build-and-inject:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
+      - name: Checkout Code
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -21,83 +27,19 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '18'
 
-      - name: Inject Manifest, SW Register Tags, and Clean Mobirise Branding
+      - name: Install Dependencies
         run: |
-          node -e '
-            const fs = require("fs");
-            const path = require("path");
+          npm init -y
+          npm install workbox-build
 
-            function getHtmlFiles(dir) {
-              let results = [];
-              const list = fs.readdirSync(dir);
-              list.forEach(file => {
-                const filePath = path.join(dir, file);
-                const stat = fs.statSync(filePath);
-                if (stat && stat.isDirectory()) {
-                  if (!file.startsWith(".") && file !== "node_modules") {
-                    results = results.concat(getHtmlFiles(filePath));
-                  }
-                } else if (file.endsWith(".html")) {
-                  results.push(filePath);
-                }
-              });
-              return results;
-            }
-
-            // Regex 1: Matches section or div blocks containing Mobirise links
-            const mobiriseContainerRegex = /<(section|div)[^>]*>(?:(?!\x3C\/(section|div)\x3E)[\s\S])*?href="https?:\/\/[^"]*mobirise[^"]*"[\s\S]*?<\/(section|div)>/gi;
-
-            // Regex 2: Catches standalone/raw Mobirise anchor tags
-            const mobiriseAnchorRegex = /<a[^>]*href="https?:\/\/[^"]*mobirise[^"]*"[^>]*>[\s\S]*?<\/a>/gi;
-
-            const files = getHtmlFiles(".");
-            files.forEach(file => {
-              let content = fs.readFileSync(file, "utf8");
-              let updated = false;
-
-              // 1. Inject PWA Manifest if missing
-              if (!content.includes("/manifest.json")) {
-                content = content.replace(/<\/head\s*>/i, "\n  <link rel=\"manifest\" href=\"/manifest.json\">\n</head>");
-                updated = true;
-              }
-
-              // 2. Inject SW Register script if missing
-              if (!content.includes("/sw-register.js")) {
-                content = content.replace(/<\/head\s*>/i, "\n  <script src=\"/sw-register.js\" defer></script>\n</head>");
-                updated = true;
-              }
-
-              // 3. Multi-pass cleanup to strip dynamic containers and rogue links
-              let previousContent;
-              let cleaned = false;
-              do {
-                previousContent = content;
-                content = content.replace(mobiriseContainerRegex, "");
-                if (content !== previousContent) cleaned = true;
-              } while (content !== previousContent);
-
-              content = content.replace(mobiriseAnchorRegex, "");
-
-              if (cleaned) {
-                updated = true;
-                console.log("Completely removed Mobirise branding containers from " + file);
-              }
-
-              if (updated) {
-                fs.writeFileSync(file, content, "utf8");
-                console.log("Updated HTML file: " + file);
-              }
-            });
-          '
-
-      - name: Run Service Worker generator script
+      - name: Run Build Script
         run: node build-sw.js
 
-      - name: Commit and push changes
+      - name: Commit and Push Updated Service Worker
         run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add -A
-          git diff --staged --quiet || (git commit -m "Auto-inject PWA manifest, clean dynamic Mobirise branding & update sw.js [skip ci]" && git push origin main)
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-inject PWA manifest & update sw [skip ci]" && git push)
