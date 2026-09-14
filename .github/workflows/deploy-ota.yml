@@ -5,11 +5,9 @@ on:
     branches:
       - main
     paths-ignore:
-      - 'sw.js'
-      - 'build-sw.js'
-      - 'manifest.json'
       - 'update-manifest.json'
       - 'releases/**'
+      - 'sw.js'
       - '**.md'
 
 jobs:
