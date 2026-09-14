@@ -43,5 +43,7 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add .
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-inject PWA manifest & update sw [skip ci]" && git push)
+          git add sw.js
+          git pull --rebase origin main
+          git commit -m "Auto-inject PWA manifest & update sw [skip ci]" || exit 0
+          git push
