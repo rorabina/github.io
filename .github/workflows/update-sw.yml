@@ -11,6 +11,8 @@ on:
       - 'update-manifest.json'
       - 'releases/**'
       - '.github/workflows/**'
+      - '*.html'
+      - 'assets/**'
       - '**.md'
 
 concurrency:
