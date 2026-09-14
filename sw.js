@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ror-pwa-1789345240849';
+const CACHE_NAME = 'ror-pwa-1789347014626';
 const PRECACHE_ASSETS = [
   "/about.html",
   "/animal-welfare.html",
