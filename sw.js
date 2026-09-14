@@ -127,6 +127,7 @@ const PRECACHE_ASSETS = [
   "/sw-register.js",
   "/test.html",
   "/timeline.html",
+  "/update-manifest.json",
   "/visual-artworks.html",
   "/web-dev.html"
 ];
