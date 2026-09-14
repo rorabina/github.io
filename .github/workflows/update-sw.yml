@@ -46,8 +46,11 @@ jobs:
               return results;
             }
 
-            // Regex targets any <section> block that contains a Mobirise link, regardless of dynamic text
-            const mobiriseSectionRegex = /<section[^>]*>(?:(?!<\/section>)[\s\S])*?href="https?:\/\/[^"]*mobirise[^"]*"[\s\S]*?<\/section>/gi;
+            // Regex 1: Matches section or div blocks containing Mobirise links
+            const mobiriseContainerRegex = /<(section|div)[^>]*>(?:(?!\x3C\/(section|div)\x3E)[\s\S])*?href="https?:\/\/[^"]*mobirise[^"]*"[\s\S]*?<\/(section|div)>/gi;
+
+            // Regex 2: Catches standalone/raw Mobirise anchor tags
+            const mobiriseAnchorRegex = /<a[^>]*href="https?:\/\/[^"]*mobirise[^"]*"[^>]*>[\s\S]*?<\/a>/gi;
 
             const files = getHtmlFiles(".");
             files.forEach(file => {
@@ -66,11 +69,20 @@ jobs:
                 updated = true;
               }
 
-              // 3. Remove all dynamic Mobirise footer sections
-              if (mobiriseSectionRegex.test(content)) {
-                content = content.replace(mobiriseSectionRegex, "");
+              // 3. Multi-pass cleanup to strip dynamic containers and rogue links
+              let previousContent;
+              let cleaned = false;
+              do {
+                previousContent = content;
+                content = content.replace(mobiriseContainerRegex, "");
+                if (content !== previousContent) cleaned = true;
+              } while (content !== previousContent);
+
+              content = content.replace(mobiriseAnchorRegex, "");
+
+              if (cleaned) {
                 updated = true;
-                console.log("Removed dynamic Mobirise section from " + file);
+                console.log("Completely removed Mobirise branding containers from " + file);
               }
 
               if (updated) {
