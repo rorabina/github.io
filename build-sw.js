@@ -8,8 +8,10 @@ async function buildSW() {
   htmlFiles.forEach(file => {
     let content = fs.readFileSync(file, 'utf8');
 
-    // 1. Remove Mobirise dynamic footer links & section blocks
+    // 1. Remove Mobirise engine sections, containers, and backlinks completely
     content = content.replace(/<section[^>]*class="[^"]*engine[^"]*"[^>]*>[\s\S]*?<\/section>/gi, '');
+    content = content.replace(/<section[^>]*id="[^"]*mobirise[^"]*"[^>]*>[\s\S]*?<\/section>/gi, '');
+    content = content.replace(/<div[^>]*class="[^"]*mbr-footer[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '');
     content = content.replace(/<a[^>]*href="https?:\/\/(www\.)?mobirise\.com[^"]*"[^>]*>[\s\S]*?<\/a>/gi, '');
 
     // 2. Inject Web App Manifest if missing
