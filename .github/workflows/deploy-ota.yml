@@ -20,6 +20,9 @@ jobs:
 
       - name: Fix Absolute Paths & Inject Capgo Script
         run: |
+          # Strip Mobirise dynamic footer links
+          sed -i 's/<a[^>]*href="https:\/\/\(www\.\)\?mobirise\.com[^"]*"[^>]*>.*<\/a>//gi' *.html
+
           # Recursively strip leading slashes from href and src attributes in all HTML files
           sed -i 's/href="\/assets\//href="assets\//g; s/src="\/assets\//src="assets\//g; s/href="\//href="/g; s/src="\//src="/g' *.html
 
