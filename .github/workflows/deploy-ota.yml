@@ -19,8 +19,8 @@ jobs:
       - name: Zip Web Bundle
         run: |
           mkdir -p releases
-          # Zip root web files excluding git and node metadata
-          zip -r releases/www-latest.zip . -x "*.git*" "node_modules/*" ".github/*" "releases/*"
+          # Only zip web files needed by Capacitor
+          zip -r releases/www-latest.zip index.html *.html assets/ sw.js manifest.json -x "*.git*"
 
       - name: Update Manifest Version
         run: |
