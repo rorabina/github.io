@@ -1,5 +1,5 @@
 
-const CACHE_NAME = 'ror-pwa-v2';
+const CACHE_NAME = 'rorabina-pwa-v3';
 const PRECACHE_ASSETS = [
   "/.gitignore",
   "/README.md",
