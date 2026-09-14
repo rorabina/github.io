@@ -18,16 +18,18 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Inject Capgo App Ready Script into index.html
+      - name: Fix Absolute Paths & Inject Capgo Script
         run: |
+          # Convert absolute paths (/manifest.json -> manifest.json, /sw-register.js -> sw-register.js) in all HTML files
+          sed -i 's/href="\/ /href="/g; s/src="\/ /src="/g; s/href="\//href="/g; s/src="\//src="/g' *.html
+
           # Inject the CapacitorUpdater notify snippet right before </body> tag in index.html
           sed -i '/<\/body>/i <script type="module">import { CapacitorUpdater } from "https://cdn.jsdelivr.net/npm/@capgo/capacitor-updater@6/dist/plugin.js"; window.addEventListener("load", () => { CapacitorUpdater.notifyAppReady(); });</script>' index.html
 
       - name: Zip Web Bundle
         run: |
           mkdir -p releases
-          # Only zip web files needed by Capacitor
-          zip -r releases/www-latest.zip index.html *.html assets/ sw.js manifest.json -x "*.git*"
+          zip -r releases/www-latest.zip index.html *.html assets/ sw.js sw-register.js manifest.json -x "*.git*"
 
       - name: Update Manifest Version
         run: |
@@ -39,5 +41,5 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add releases/www-latest.zip update-manifest.json
-          git commit -m "Auto-generate OTA release $VERSION with Capgo script [skip ci]" || exit 0
+          git commit -m "Auto-fix absolute paths & generate OTA release $VERSION [skip ci]" || exit 0
           git push
