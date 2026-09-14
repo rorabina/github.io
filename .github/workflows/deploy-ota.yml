@@ -18,21 +18,28 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Fix Absolute Paths & Inject Capgo Script
+      - name: Clean HTML, Inject Manifest & Capgo Script
         run: |
-          # Strip Mobirise dynamic footer links
+          # 1. Remove Mobirise footer links across all HTML files
           sed -i 's/<a[^>]*href="https:\/\/\(www\.\)\?mobirise\.com[^"]*"[^>]*>.*<\/a>//gi' *.html
+          sed -i 's/<section[^>]*class="[^"]*engine[^"]*"[^>]*>.*<\/section>//gi' *.html
 
-          # Recursively strip leading slashes from href and src attributes in all HTML files
+          # 2. Inject PWA Manifest link into <head> if missing
+          for file in *.html; do
+            if ! grep -q 'rel="manifest"' "$file"; then
+              sed -i '/<\/head>/i \  <link rel="manifest" href="manifest.json">' "$file"
+            fi
+          done
+
+          # 3. Fix absolute asset paths for native WebView compatibility
           sed -i 's/href="\/assets\//href="assets\//g; s/src="\/assets\//src="assets\//g; s/href="\//href="/g; s/src="\//src="/g' *.html
 
-          # Inject the CapacitorUpdater notify snippet right before </body> tag in index.html
+          # 4. Inject Capgo updater script before </body> tag in index.html
           sed -i '/<\/body>/i <script type="module">import { CapacitorUpdater } from "https://cdn.jsdelivr.net/npm/@capgo/capacitor-updater@6/dist/plugin.js"; window.addEventListener("load", () => { CapacitorUpdater.notifyAppReady(); });</script>' index.html
 
       - name: Zip Web Bundle
         run: |
           mkdir -p releases
-          # Removing trailing slash from assets ensures recursive inclusion of all CSS/JS subfolders
           zip -r releases/www-latest.zip index.html *.html assets sw.js sw-register.js manifest.json -x "*.git*"
 
       - name: Update Manifest Version
@@ -40,10 +47,11 @@ jobs:
           VERSION="2.0.${{ github.run_number }}"
           echo "{\"version\": \"$VERSION\", \"url\": \"https://rorabina.github.io/releases/www-latest.zip\"}" > update-manifest.json
 
-      - name: Commit and Push Manifest & Zip
+      - name: Commit and Push Cleaned Files & OTA Zip
         run: |
           git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add releases/www-latest.zip update-manifest.json
-          git commit -m "Auto-fix absolute paths & generate OTA release $VERSION [skip ci]" || exit 0
+          git config --global user.email "github-actions[bot]"
+          git add *.html releases/www-latest.zip update-manifest.json
+          git pull --rebase -X ours origin main
+          git commit -m "Auto-clean HTML, inject manifest & OTA $VERSION [skip ci]" || exit 0
           git push
