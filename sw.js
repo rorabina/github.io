@@ -1,6 +1,7 @@
 
 const CACHE_NAME = 'ror-pwa-v2';
 const PRECACHE_ASSETS = [
+  "/.gitignore",
   "/README.md",
   "/about.html",
   "/animal-welfare.html",
