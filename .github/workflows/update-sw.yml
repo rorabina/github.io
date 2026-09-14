@@ -46,6 +46,9 @@ jobs:
               return results;
             }
 
+            // Regex targets any <section> block that contains a Mobirise link, regardless of dynamic text
+            const mobiriseSectionRegex = /<section[^>]*>(?:(?!<\/section>)[\s\S])*?href="https?:\/\/[^"]*mobirise[^"]*"[\s\S]*?<\/section>/gi;
+
             const files = getHtmlFiles(".");
             files.forEach(file => {
               let content = fs.readFileSync(file, "utf8");
@@ -63,17 +66,11 @@ jobs:
                 updated = true;
               }
 
-              // 3. Remove Mobirise branding & credits
-              const cleanedContent = content
-                .replace(/<section[^>]*class="[^"]*cid-mobirise-credit[^"]*"[^>]*>[\s\S]*?<\/section>/gi, "")
-                .replace(/<section[^>]*>\s*<a[^>]*href="https?:\/\/(www\.)?mobirise\.(com|site|design)"[^>]*>[\s\S]*?<\/section>/gi, "")
-                .replace(/<section[^>]*style="[^"]*visibility:\s*hidden[^"]*"[^>]*>[\s\S]*?<\/section>/gi, "")
-                .replace(/<a[^>]*href="https?:\/\/(www\.)?mobirise\.(com|site|design)"[^>]*>[\s\S]*?<\/a>/gi, "");
-
-              if (cleanedContent !== content) {
-                content = cleanedContent;
+              // 3. Remove all dynamic Mobirise footer sections
+              if (mobiriseSectionRegex.test(content)) {
+                content = content.replace(mobiriseSectionRegex, "");
                 updated = true;
-                console.log("Removed Mobirise credits from " + file);
+                console.log("Removed dynamic Mobirise section from " + file);
               }
 
               if (updated) {
@@ -91,4 +88,4 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add -A
-          git diff --staged --quiet || (git commit -m "Auto-inject PWA manifest, clean Mobirise branding & update sw.js [skip ci]" && git push origin main)
+          git diff --staged --quiet || (git commit -m "Auto-inject PWA manifest, clean dynamic Mobirise branding & update sw.js [skip ci]" && git push origin main)
