@@ -1,0 +1,36 @@
+name: Generate Capgo OTA Release
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'update-manifest.json'
+      - '**.md'
+
+jobs:
+  create-ota-zip:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Zip Web Bundle
+        run: |
+          mkdir -p releases
+          # Zip root web files excluding git and node metadata
+          zip -r releases/www-latest.zip . -x "*.git*" "node_modules/*" ".github/*" "releases/*"
+
+      - name: Update Manifest Version
+        run: |
+          VERSION="1.0.${{ github.run_number }}"
+          echo "{\"version\": \"$VERSION\", \"url\": \"https://rorabina.github.io/releases/www-latest.zip\"}" > update-manifest.json
+
+      - name: Commit and Push Manifest & Zip
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add releases/www-latest.zip update-manifest.json
+          git commit -m "Auto-generate OTA release $VERSION [skip ci]" || exit 0
+          git push
