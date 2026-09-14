@@ -1,5 +1,7 @@
-const CACHE_NAME = 'ror-pwa-1789348729381';
+
+const CACHE_NAME = 'ror-pwa-v2';
 const PRECACHE_ASSETS = [
+  "/README.md",
   "/about.html",
   "/animal-welfare.html",
   "/app.html",
@@ -81,13 +83,25 @@ const PRECACHE_ASSETS = [
   "/assets/parallax/jarallax.js",
   "/assets/smoothscroll/smooth-scroll.js",
   "/assets/socicon/css/styles.css",
+  "/assets/socicon/fonts/socicon.eot",
   "/assets/socicon/fonts/socicon.svg",
+  "/assets/socicon/fonts/socicon.ttf",
+  "/assets/socicon/fonts/socicon.woff",
+  "/assets/socicon/fonts/socicon.woff2",
   "/assets/theme/css/style.css",
   "/assets/theme/js/script.js",
   "/assets/web/assets/mobirise-icons-bold/mobirise-icons-bold.css",
+  "/assets/web/assets/mobirise-icons-bold/mobirise-icons-bold.eot",
   "/assets/web/assets/mobirise-icons-bold/mobirise-icons-bold.svg",
+  "/assets/web/assets/mobirise-icons-bold/mobirise-icons-bold.ttf",
+  "/assets/web/assets/mobirise-icons-bold/mobirise-icons-bold.woff",
+  "/assets/web/assets/mobirise-icons-bold/mobirise-icons-bold.woff2",
   "/assets/web/assets/mobirise-icons2/mobirise2.css",
+  "/assets/web/assets/mobirise-icons2/mobirise2.eot",
   "/assets/web/assets/mobirise-icons2/mobirise2.svg",
+  "/assets/web/assets/mobirise-icons2/mobirise2.ttf",
+  "/assets/web/assets/mobirise-icons2/mobirise2.woff",
+  "/assets/web/assets/mobirise-icons2/mobirise2.woff2",
   "/assets/ytplayer/index.js",
   "/build-sw.js",
   "/defense-tech.html",
@@ -102,93 +116,86 @@ const PRECACHE_ASSETS = [
   "/merch.html",
   "/photography.html",
   "/portfolio.html",
+  "/project.mobirise",
+  "/robots.txt",
+  "/sitemap.xml",
   "/social-welfare.html",
   "/space-tech.html",
   "/sw-register.js",
-  "/sw.js",
   "/test.html",
   "/timeline.html",
   "/visual-artworks.html",
-  "/web-dev.html",
-  "https://fonts.googleapis.com/css2?family=Jost:wght@100;200;300;400;500;600;700;800;900&display=swap"
+  "/web-dev.html"
 ];
 
-// 1. Install Event: Cache assets safely one-by-one so a single failure doesn't abort caching
+// 1. Install Event: Precache core static assets
 self.addEventListener('install', (event) => {
-  self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then(async (cache) => {
-      await Promise.allSettled(
-        PRECACHE_ASSETS.map(async (url) => {
-          try {
-            await cache.add(url);
-          } catch (err) {
-            console.warn(`Failed to precache asset: ${url}`, err);
-          }
-        })
-      );
-    })
+    caches.open(CACHE_NAME).then((cache) => {
+      console.log('[SW] Precaching app shell & assets');
+      return cache.addAll(PRECACHE_ASSETS);
+    }).then(() => self.skipWaiting())
   );
 });
 
-// 2. Activate Event: Clear out outdated caches and take control immediately
+// 2. Activate Event: Clean up old cache versions
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => {
+    caches.keys().then((cacheNames) => {
       return Promise.all(
-        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
+        cacheNames.map((cache) => {
+          if (cache !== CACHE_NAME) {
+            console.log('[SW] Deleting old cache:', cache);
+            return caches.delete(cache);
+          }
+        })
       );
     }).then(() => self.clients.claim())
   );
 });
 
-// 3. Fetch Event: Network-first for navigation, Cache-first for assets, handle opaque cross-origin fonts/CDNs
+// 3. Fetch Event: Network-First for HTML (Instant updates), Stale-While-Revalidate for Assets
 self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
+  const request = event.request;
 
-  // Handle HTML Page Navigations
-  if (event.request.mode === 'navigate') {
+  // Skip non-GET requests
+  if (request.method !== 'GET') return;
+
+  // A. Strategy for HTML Navigation / Pages: NETWORK-FIRST
+  if (request.mode === 'navigate' || request.headers.get('accept')?.includes('text/html')) {
     event.respondWith(
-      fetch(event.request)
+      fetch(request)
         .then((networkResponse) => {
+          // Update cache with the fresh page from network
           if (networkResponse && networkResponse.status === 200) {
-            const responseToCache = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(event.request, responseToCache);
-            });
+            const responseClone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, responseClone));
           }
           return networkResponse;
         })
         .catch(() => {
-          return caches.match(event.request).then((cachedResponse) => {
-            return cachedResponse || caches.match('/index.html') || caches.match('/');
+          // If offline, serve from cache fallback
+          return caches.match(request).then((cachedResponse) => {
+            return cachedResponse || caches.match('/index.html');
           });
         })
     );
     return;
   }
 
-  // Handle Static Assets, Stylesheets, Fonts, and Images
+  // B. Strategy for Static Assets (CSS, JS, Images, Fonts): STALE-WHILE-REVALIDATE
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(event.request)
-        .then((networkResponse) => {
-          // Allow status 200 and opaque cross-origin responses (status 0 for external fonts/CDNs)
-          if (networkResponse && (networkResponse.status === 200 || networkResponse.status === 0)) {
-            const responseToCache = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(event.request, responseToCache);
-            });
-          }
-          return networkResponse;
-        })
-        .catch(() => {
-          // Fallback if asset fetch fails offline
-          return null;
-        });
+    caches.match(request).then((cachedResponse) => {
+      const fetchPromise = fetch(request).then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const responseClone = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, responseClone));
+        }
+        return networkResponse;
+      }).catch(() => {/* Ignore network errors for static asset fetches */});
+
+      // Serve cached asset immediately, or wait for network fetch if missing
+      return cachedResponse || fetchPromise;
     })
   );
 });
