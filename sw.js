@@ -115,6 +115,8 @@ const PRECACHE_ASSETS = [
   "/local-travels.html",
   "/manifest.json",
   "/merch.html",
+  "/package-lock.json",
+  "/package.json",
   "/photography.html",
   "/portfolio.html",
   "/project.mobirise",
