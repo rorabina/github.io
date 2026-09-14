@@ -17,6 +17,9 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -31,10 +34,7 @@ jobs:
 
       - name: Fix Absolute Paths for Native WebView & Inject Capgo
         run: |
-          # Convert absolute asset paths to relative paths for Capacitor native builds
           sed -i 's/href="\/assets\//href="assets\//g; s/src="\/assets\//src="assets\//g; s/href="\//href="/g; s/src="\//src="/g' *.html
-
-          # Inject Capgo updater script before </body> tag in index.html
           sed -i '/<\/body>/i <script type="module">import { CapacitorUpdater } from "https://cdn.jsdelivr.net/npm/@capgo/capacitor-updater@6/dist/plugin.js"; window.addEventListener("load", () => { CapacitorUpdater.notifyAppReady(); });</script>' index.html
 
       - name: Zip Web Bundle
@@ -52,6 +52,8 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add releases/www-latest.zip update-manifest.json sw.js *.html
+          git stash
           git pull --rebase origin main
+          git stash pop || true
           git commit -m "Auto-build SW, inject manifest & release OTA $VERSION [skip ci]" || exit 0
           git push
