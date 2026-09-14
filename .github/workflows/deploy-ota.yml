@@ -25,6 +25,12 @@ jobs:
         with:
           node-version: '18'
 
+      - name: Fetch Latest Remote Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git pull origin main
+
       - name: Run Build Script (Clean HTML & Generate SW)
         run: |
           npm init -y
@@ -49,15 +55,10 @@ jobs:
       - name: Update Manifest Version
         run: |
           VERSION="2.0.${{ github.run_number }}"
-          echo "{\"version\": \"$VERSION\", \"url\": \"https://github.com/rorabina/rorabina.github.io/raw/main/releases/www-latest.zip\"}" > update-manifest.json
+          echo "{\"version\": \"$VERSION\", \"url\": \"https://raw.githubusercontent.com/rorabina/rorabina.github.io/main/releases/www-latest.zip\"}" > update-manifest.json
 
-      - name: Commit Cleaned Files Back to Main
+      - name: Commit and Push Cleaned Files Back to Main
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add *.html sw.js releases/www-latest.zip update-manifest.json
-          git stash
-          git pull --rebase origin main
-          git stash pop || true
           git commit -m "Auto-clean Mobirise links, inject PWA manifest & update OTA $VERSION [skip ci]" || exit 0
-          git push
+          git push origin main
