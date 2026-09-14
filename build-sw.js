@@ -1,82 +1,108 @@
 const fs = require('fs');
 const path = require('path');
 
-const PUBLIC_DIR = './';
-const EXCLUDE_DIRS = ['.git', '.github', 'node_modules'];
-
-// 1. Scan directory for local assets
-function getFiles(dir, fileList = []) {
-  const files = fs.readdirSync(dir);
-  files.forEach(file => {
+// Recursively find all static files to precache
+function getFiles(dir, baseDir = '') {
+  let results = [];
+  const list = fs.readdirSync(dir);
+  list.forEach(file => {
     const filePath = path.join(dir, file);
+    const relativePath = path.join(baseDir, file);
     const stat = fs.statSync(filePath);
-    
-    if (stat.isDirectory()) {
-      if (!EXCLUDE_DIRS.includes(file)) {
-        getFiles(filePath, fileList);
+    if (stat && stat.isDirectory()) {
+      if (!file.startsWith('.') && file !== 'node_modules') {
+        results = results.concat(getFiles(filePath, relativePath));
       }
     } else {
-      if (/\.(html|css|js|json|png|jpg|jpeg|svg|ico|webp)$/i.test(file)) {
-        let relativePath = path.relative(PUBLIC_DIR, filePath).replace(/\\/g, '/');
-        if (!relativePath.startsWith('/')) {
-          relativePath = '/' + relativePath;
-        }
-        fileList.push(relativePath);
+      // Avoid precaching sw.js itself or backup files
+      if (file !== 'sw.js' && !file.endsWith('.bak')) {
+        results.push('/' + relativePath.replace(/\\/g, '/'));
       }
     }
   });
-  return fileList;
+  return results;
 }
 
-const localAssets = getFiles(PUBLIC_DIR);
-const externalAssets = [
-  'https://fonts.googleapis.com/css2?family=Jost:wght@100;200;300;400;500;600;700;800;900&display=swap'
-];
-const allAssets = Array.from(new Set([...localAssets, ...externalAssets]));
-const cacheVersion = 'ror-pwa-' + Date.now();
+const precacheAssets = getFiles('.');
+// Increment version tag whenever you want to force cache invalidation on mobile PWAs
+const CACHE_NAME = 'ror-pwa-v2';
 
-// 2. Automatically Inject Manifest & SW Registration into all HTML files
-const htmlFiles = localAssets.filter(file => file.endsWith('.html'));
-htmlFiles.forEach(file => {
-  const htmlPath = path.join(PUBLIC_DIR, file);
-  let htmlContent = fs.readFileSync(htmlPath, 'utf8');
-  let modified = false;
+const swContent = `
+const CACHE_NAME = '${CACHE_NAME}';
+const PRECACHE_ASSETS = ${JSON.stringify(precacheAssets, null, 2)};
 
-  // Inject manifest tag if missing
-  if (!htmlContent.includes('rel="manifest"')) {
-    htmlContent = htmlContent.replace('</head>', '  <link rel="manifest" href="/manifest.json">\n</head>');
-    modified = true;
-  }
-
-  // Inject service worker registration script if missing
-  if (!htmlContent.includes('sw-register.js')) {
-    htmlContent = htmlContent.replace('</head>', '  <script src="/sw-register.js" defer></script>\n</head>');
-    modified = true;
-  }
-
-  if (modified) {
-    fs.writeFileSync(htmlPath, htmlContent, 'utf8');
-    console.log(`Injected manifest/sw into: ${file}`);
-  }
+// 1. Install Event: Precache core static assets
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      console.log('[SW] Precaching app shell & assets');
+      return cache.addAll(PRECACHE_ASSETS);
+    }).then(() => self.skipWaiting())
+  );
 });
 
-// 3. Update sw.js with asset list and version hash
-const swTemplatePath = './sw.js';
-if (fs.existsSync(swTemplatePath)) {
-  let swContent = fs.readFileSync(swTemplatePath, 'utf8');
-
-  swContent = swContent.replace(
-    /const CACHE_NAME = ['"].*?['"];/,
-    `const CACHE_NAME = '${cacheVersion}';`
+// 2. Activate Event: Clean up old cache versions
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cache) => {
+          if (cache !== CACHE_NAME) {
+            console.log('[SW] Deleting old cache:', cache);
+            return caches.delete(cache);
+          }
+        })
+      );
+    }).then(() => self.clients.claim())
   );
+});
 
-  swContent = swContent.replace(
-    /const PRECACHE_ASSETS = \[[\s\S]*?\];/,
-    `const PRECACHE_ASSETS = ${JSON.stringify(allAssets, null, 2)};`
+// 3. Fetch Event: Network-First for HTML (Instant updates), Stale-While-Revalidate for Assets
+self.addEventListener('fetch', (event) => {
+  const request = event.request;
+
+  // Skip non-GET requests
+  if (request.method !== 'GET') return;
+
+  // A. Strategy for HTML Navigation / Pages: NETWORK-FIRST
+  if (request.mode === 'navigate' || request.headers.get('accept')?.includes('text/html')) {
+    event.respondWith(
+      fetch(request)
+        .then((networkResponse) => {
+          // Update cache with the fresh page from network
+          if (networkResponse && networkResponse.status === 200) {
+            const responseClone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, responseClone));
+          }
+          return networkResponse;
+        })
+        .catch(() => {
+          // If offline, serve from cache fallback
+          return caches.match(request).then((cachedResponse) => {
+            return cachedResponse || caches.match('/index.html');
+          });
+        })
+    );
+    return;
+  }
+
+  // B. Strategy for Static Assets (CSS, JS, Images, Fonts): STALE-WHILE-REVALIDATE
+  event.respondWith(
+    caches.match(request).then((cachedResponse) => {
+      const fetchPromise = fetch(request).then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const responseClone = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, responseClone));
+        }
+        return networkResponse;
+      }).catch(() => {/* Ignore network errors for static asset fetches */});
+
+      // Serve cached asset immediately, or wait for network fetch if missing
+      return cachedResponse || fetchPromise;
+    })
   );
+});
+`;
 
-  fs.writeFileSync(swTemplatePath, swContent, 'utf8');
-  console.log(`Successfully updated sw.js with ${allAssets.length} assets and cache name ${cacheVersion}`);
-} else {
-  console.error('Error: sw.js template not found in root directory.');
-}
+fs.writeFileSync('sw.js', swContent, 'utf8');
+console.log('Successfully updated sw.js with Network-First strategy!');
