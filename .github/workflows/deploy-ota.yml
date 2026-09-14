@@ -20,8 +20,8 @@ jobs:
 
       - name: Fix Absolute Paths & Inject Capgo Script
         run: |
-          # Convert absolute paths (/manifest.json -> manifest.json, /sw-register.js -> sw-register.js) in all HTML files
-          sed -i 's/href="\/ /href="/g; s/src="\/ /src="/g; s/href="\//href="/g; s/src="\//src="/g' *.html
+          # Recursively strip leading slashes from href and src attributes in all HTML files
+          sed -i 's/href="\/assets\//href="assets\//g; s/src="\/assets\//src="assets\//g; s/href="\//href="/g; s/src="\//src="/g' *.html
 
           # Inject the CapacitorUpdater notify snippet right before </body> tag in index.html
           sed -i '/<\/body>/i <script type="module">import { CapacitorUpdater } from "https://cdn.jsdelivr.net/npm/@capgo/capacitor-updater@6/dist/plugin.js"; window.addEventListener("load", () => { CapacitorUpdater.notifyAppReady(); });</script>' index.html
@@ -29,7 +29,8 @@ jobs:
       - name: Zip Web Bundle
         run: |
           mkdir -p releases
-          zip -r releases/www-latest.zip index.html *.html assets/ sw.js sw-register.js manifest.json -x "*.git*"
+          # Removing trailing slash from assets ensures recursive inclusion of all CSS/JS subfolders
+          zip -r releases/www-latest.zip index.html *.html assets sw.js sw-register.js manifest.json -x "*.git*"
 
       - name: Update Manifest Version
         run: |
