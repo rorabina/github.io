@@ -16,6 +16,11 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Inject Capgo App Ready Script into index.html
+        run: |
+          # Inject the CapacitorUpdater notify snippet right before </body> tag in index.html
+          sed -i '/<\/body>/i <script type="module">import { CapacitorUpdater } from "https://cdn.jsdelivr.net/npm/@capgo/capacitor-updater@6/dist/plugin.js"; window.addEventListener("load", () => { CapacitorUpdater.notifyAppReady(); });</script>' index.html
+
       - name: Zip Web Bundle
         run: |
           mkdir -p releases
@@ -32,5 +37,5 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add releases/www-latest.zip update-manifest.json
-          git commit -m "Auto-generate OTA release $VERSION [skip ci]" || exit 0
+          git commit -m "Auto-generate OTA release $VERSION with Capgo script [skip ci]" || exit 0
           git push
