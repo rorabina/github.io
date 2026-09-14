@@ -10,6 +10,7 @@ on:
       - 'manifest.json'
       - 'update-manifest.json'
       - 'releases/**'
+      - '.github/workflows/**'
       - '**.md'
 
 concurrency:
@@ -44,6 +45,6 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add sw.js
-          git pull --rebase origin main
+          git pull --rebase -X ours origin main
           git commit -m "Auto-inject PWA manifest & update sw [skip ci]" || exit 0
           git push
