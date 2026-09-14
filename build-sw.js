@@ -8,7 +8,7 @@ async function buildSW() {
   htmlFiles.forEach(file => {
     let content = fs.readFileSync(file, 'utf8');
 
-    // 1. Strip Mobirise dynamic footer links & section blocks
+    // 1. Remove Mobirise dynamic footer links & section blocks
     content = content.replace(/<section[^>]*class="[^"]*engine[^"]*"[^>]*>[\s\S]*?<\/section>/gi, '');
     content = content.replace(/<a[^>]*href="https?:\/\/(www\.)?mobirise\.com[^"]*"[^>]*>[\s\S]*?<\/a>/gi, '');
 
@@ -23,7 +23,7 @@ async function buildSW() {
   // 3. Generate Workbox Service Worker
   const { count, size } = await workboxBuild.generateSW({
     globDirectory: './',
-    globPatterns: ['**/*.{html,css,js,png,jpg,jpeg,svg,gif,json,woff,woff2}'],
+    globPatterns: ['**/*.{html,css,js,png,jpg,jpeg,svg,gif,json}'],
     globIgnores: ['node_modules/**/*', 'build-sw.js', 'releases/**/*', '.github/**/*'],
     swDest: 'sw.js',
     clientsClaim: true,
