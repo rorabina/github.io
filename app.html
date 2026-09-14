@@ -40,6 +40,19 @@
 </style>
 
   <link rel="manifest" href="manifest.json">
+
+<style id="mobirise-cleaner">
+  /* Mobirise Fail-Safe */
+  [class*="engine"], [id*="mobirise"], a[href*="mobiri.se"], a[href*="mobirise.com"] {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    height: 0 !important;
+    width: 0 !important;
+    opacity: 0 !important;
+  }
+</style>
+
 </head>
 <body>
   
@@ -160,5 +173,39 @@
   
   
  <div id="scrollToTop" class="scrollToTop mbr-arrow-up"><a style="text-align: center;"><i class="mbr-arrow-up-icon mbr-arrow-up-icon-cm cm-icon cm-icon-smallarrow-up"></i></a></div>
-  </body>
+  
+<script id="pwa-android-installer">
+  (function() {
+    let deferredPrompt = null;
+
+    // Listen for the browser PWA install event
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      console.log('PWA install prompt intercepted and ready.');
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Target the Android button by its text content or icon
+      const buttons = Array.from(document.querySelectorAll('a, button'));
+      const androidBtn = buttons.find(b => b.textContent.includes('Android') || b.querySelector('.socicon-android'));
+
+      if (androidBtn) {
+        androidBtn.addEventListener('click', async (evt) => {
+          evt.preventDefault();
+          if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log('User PWA install response:', outcome);
+            deferredPrompt = null;
+          } else {
+            alert('PWA installation is either already completed or not supported on this browser/device.');
+          }
+        });
+      }
+    });
+  })();
+</script>
+
+</body>
 </html>
