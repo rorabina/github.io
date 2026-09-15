@@ -92,17 +92,35 @@ async function buildSW() {
     fs.writeFileSync(file, content, 'utf8');
   });
 
-  // 7. Generate Workbox Service Worker with Precached HTML Routing
+  // 7. Generate Workbox Service Worker with Guaranteed Precache & Offline Fallback
   const { count, size } = await workboxBuild.generateSW({
     globDirectory: './',
     globPatterns: ['**/*.{html,css,js,png,jpg,jpeg,svg,gif,json}'],
     globIgnores: ['node_modules/**/*', 'build-sw.js', 'releases/**/*', '.github/**/*'],
     swDest: 'sw.js',
+    cacheId: 'rorabina-site',
     clientsClaim: true,
     skipWaiting: true,
-    // Automatically match offline page navigations to precached HTML files
-    directoryIndex: 'index.html',
-    cleanUrls: false
+    runtimeCaching: [
+      {
+        urlPattern: ({ request }) => request.mode === 'navigate',
+        handler: 'NetworkFirst',
+        options: {
+          cacheName: 'rorabina-html-pages',
+          networkTimeoutSeconds: 3,
+          expiration: {
+            maxEntries: 50,
+          },
+        },
+      },
+      {
+        urlPattern: ({ request }) => request.destination === 'style' || request.destination === 'script' || request.destination === 'image',
+        handler: 'StaleWhileRevalidate',
+        options: {
+          cacheName: 'rorabina-assets',
+        },
+      },
+    ],
   });
 
   console.log(`Generated sw.js: precaching ${count} files (${size} bytes).`);
