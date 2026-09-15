@@ -92,7 +92,7 @@ async function buildSW() {
     fs.writeFileSync(file, content, 'utf8');
   });
 
-  // 7. Generate Workbox Service Worker with Explicit Precaching & Extended Limit
+  // 7. Generate Workbox Service Worker with Guaranteed Pre-fetching & Navigation Fallback
   const { count, size } = await workboxBuild.generateSW({
     globDirectory: './',
     globPatterns: ['**/*.{html,css,js,png,jpg,jpeg,svg,gif,json}'],
@@ -102,10 +102,12 @@ async function buildSW() {
     skipWaiting: true,
     cleanupOutdatedCaches: true,
     maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10 MB limit per file
+    // Maps offline page navigations to precached HTML files
+    navigateFallback: 'index.html',
     runtimeCaching: [
       {
         urlPattern: ({ request }) => request.mode === 'navigate',
-        handler: 'StaleWhileRevalidate',
+        handler: 'CacheFirst',
         options: {
           cacheName: 'rorabina-html-pages',
           expiration: {
@@ -118,7 +120,7 @@ async function buildSW() {
           request.destination === 'style' ||
           request.destination === 'script' ||
           request.destination === 'image',
-        handler: 'StaleWhileRevalidate',
+        handler: 'CacheFirst',
         options: {
           cacheName: 'rorabina-assets',
           expiration: {
