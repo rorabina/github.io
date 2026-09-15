@@ -92,7 +92,7 @@ async function buildSW() {
     fs.writeFileSync(file, content, 'utf8');
   });
 
-  // 7. Generate Workbox Service Worker with Explicit Precaching & Active Claims
+  // 7. Generate Workbox Service Worker with Inlined Workbox Runtime
   const { count, size } = await workboxBuild.generateSW({
     globDirectory: './',
     globPatterns: ['**/*.{html,css,js,png,jpg,jpeg,svg,gif,json}'],
@@ -100,10 +100,12 @@ async function buildSW() {
       'node_modules/**/*',
       'build-sw.js',
       'sw.js',
+      'workbox-*.js',
       'releases/**/*',
       '.github/**/*'
     ],
     swDest: 'sw.js',
+    inlineWorkboxRuntime: true, // Bundles all Workbox helpers directly inside sw.js
     clientsClaim: true,
     skipWaiting: true,
     cleanupOutdatedCaches: true,
@@ -115,9 +117,7 @@ async function buildSW() {
         handler: 'StaleWhileRevalidate',
         options: {
           cacheName: 'rorabina-html-pages',
-          expiration: {
-            maxEntries: 50,
-          },
+          expiration: { maxEntries: 50 },
         },
       },
       {
@@ -128,10 +128,7 @@ async function buildSW() {
         handler: 'StaleWhileRevalidate',
         options: {
           cacheName: 'rorabina-assets',
-          expiration: {
-            maxEntries: 100,
-            maxAgeSeconds: 30 * 24 * 60 * 60,
-          },
+          expiration: { maxEntries: 100, maxAgeSeconds: 30 * 24 * 60 * 60 },
         },
       },
     ],
