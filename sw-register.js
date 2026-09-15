@@ -1,7 +1,7 @@
-// Register Service Worker and track precise Cache Storage progress
+// Register Service Worker, Dynamic Cache Progress, and Scoped Android PWA Trigger
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    // 1. Inject Floating Progress Card UI
+    // 1. Inject Floating Progress Bar UI
     const barContainer = document.createElement('div');
     barContainer.id = 'pwa-cache-status';
     barContainer.innerHTML = `
@@ -62,8 +62,15 @@ if ('serviceWorker' in navigator) {
       console.log('SW Registered:', reg.scope);
     }).catch(err => console.error('SW Registration Failed:', err));
 
-    // 3. Monitor Actual Workbox Cache Storage Entries
-    const targetTotalItems = 123; // Total files precached by build-sw.js
+    // 3. Dynamic Progress Tracking
+    let targetTotalItems = 0;
+
+    navigator.serviceWorker.addEventListener('message', (event) => {
+      if (event.data && event.data.type === 'CACHE_PROGRESS') {
+        targetTotalItems = event.data.total;
+      }
+    });
+
     let checkInterval = setInterval(async () => {
       try {
         const cacheKeys = await caches.keys();
@@ -74,7 +81,9 @@ if ('serviceWorker' in navigator) {
           const cachedRequests = await cache.keys();
           const currentCount = cachedRequests.length;
 
-          const percent = Math.min(Math.round((currentCount / targetTotalItems) * 100), 100);
+          // Dynamically adjust total to actual stored count or targetTotalItems
+          const totalToUse = targetTotalItems || Math.max(currentCount, 1);
+          const percent = Math.min(Math.round((currentCount / totalToUse) * 100), 100);
 
           const fill = document.getElementById('pwa-progress-fill');
           const pctText = document.getElementById('pwa-status-pct');
@@ -83,8 +92,7 @@ if ('serviceWorker' in navigator) {
           if (fill) fill.style.width = percent + '%';
           if (pctText) pctText.innerText = percent + '%';
 
-          // When cache reaches 100% or finishes initial installation
-          if (percent >= 100) {
+          if (percent >= 100 && currentCount > 0) {
             clearInterval(checkInterval);
             if (labelText) labelText.innerText = 'Ready for offline use!';
             localStorage.setItem('pwa_fully_cached', 'true');
@@ -102,6 +110,32 @@ if ('serviceWorker' in navigator) {
       } catch (err) {
         console.error('Cache progress error:', err);
       }
-    }, 400); // Polls cache storage every 400ms during installation
+    }, 400);
   });
 }
+
+// 4. Scoped Android Install Button Handling for app.html
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+
+  if (window.location.pathname.includes('app.html')) {
+    const androidBtn = document.querySelector('a[href*="android"], .btn-android, #android-install-btn');
+    if (androidBtn) {
+      androidBtn.style.cursor = 'pointer';
+      androidBtn.addEventListener('click', async (evt) => {
+        evt.preventDefault();
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          console.log(`PWA Install Choice: ${outcome}`);
+          deferredPrompt = null;
+        } else {
+          alert('PWA installation is already completed or not supported on this browser.');
+        }
+      });
+    }
+  }
+});
