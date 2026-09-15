@@ -2,7 +2,7 @@ const workboxBuild = require('workbox-build');
 const fs = require('fs');
 
 async function buildSW() {
-  console.log('Cleaning HTML files, injecting manifest, fixing CapacitorUpdater, adding sw-register, and building SW...');
+  console.log('Cleaning HTML files, injecting manifest, adding sw-register, and building SW...');
   const htmlFiles = fs.readdirSync('./').filter(file => file.endsWith('.html'));
 
   htmlFiles.forEach(file => {
@@ -12,7 +12,7 @@ async function buildSW() {
     content = content.replace(/<(section|div|footer|p)[^>]*>(?:(?!<\/(?:section|div|footer|p)>)[\s\S])*?href="https?:\/\/(www\.)?(mobirise\.com|mobiri\.se)[^"]*"[\s\S]*?<\/\1>/gi, '');
     content = content.replace(/<a[^>]*href="https?:\/\/(www\.)?(mobirise\.com|mobiri\.se)[^"]*"[^>]*>[\s\S]*?<\/a>/gi, '');
 
-    // 2. Fix broken Capgo CapacitorUpdater CDN import that causes JavaScript SyntaxError
+    // 2. Fix broken Capgo CapacitorUpdater CDN import
     content = content.replace(
       /<script[^>]*type="module"[^>]*>[\s\S]*?import\s*\{\s*CapacitorUpdater\s*\}\s*from\s*['"]https:\/\/cdn\.jsdelivr\.net\/npm\/@capgo\/capacitor-updater[^'"]*['"];?[\s\S]*?<\/script>/gi,
       `<script>
@@ -53,46 +53,10 @@ async function buildSW() {
       content = content.replace(/<\/body>/i, '  <script src="sw-register.js"></script>\n</body>');
     }
 
-    // 6. Inject Android PWA Install Handler into app.html
-    if (file === 'app.html' && !content.includes('pwa-android-installer')) {
-      const pwaInstallerScript = `
-<script id="pwa-android-installer">
-  (function() {
-    let deferredPrompt = null;
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      console.log('PWA install prompt intercepted and ready.');
-    });
-
-    document.addEventListener('DOMContentLoaded', () => {
-      const buttons = Array.from(document.querySelectorAll('a, button'));
-      const androidBtn = buttons.find(b => b.textContent.includes('Android') || b.querySelector('.socicon-android'));
-
-      if (androidBtn) {
-        androidBtn.addEventListener('click', async (evt) => {
-          evt.preventDefault();
-          if (deferredPrompt) {
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            console.log('User PWA install response:', outcome);
-            deferredPrompt = null;
-          } else {
-            alert('PWA installation is either already completed or not supported on this browser/device.');
-          }
-        });
-      }
-    });
-  })();
-</script>
-`;
-      content = content.replace(/<\/body>/i, `${pwaInstallerScript}\n</body>`);
-    }
-
     fs.writeFileSync(file, content, 'utf8');
   });
 
-  // 7. Generate Workbox Service Worker with Inlined Workbox Runtime
+  // 6. Generate Workbox Service Worker with Inlined Workbox Runtime
   const { count, size } = await workboxBuild.generateSW({
     globDirectory: './',
     globPatterns: ['**/*.{html,css,js,png,jpg,jpeg,svg,gif,json}'],
@@ -105,7 +69,7 @@ async function buildSW() {
       '.github/**/*'
     ],
     swDest: 'sw.js',
-    inlineWorkboxRuntime: true, // Bundles all Workbox helpers directly inside sw.js
+    inlineWorkboxRuntime: true,
     clientsClaim: true,
     skipWaiting: true,
     cleanupOutdatedCaches: true,
