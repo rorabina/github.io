@@ -91,21 +91,22 @@ async function buildSW() {
         },
       },
       {
-        // Intercept ALL stylesheets, scripts, images, and fonts regardless of URL structure
-        urlPattern: ({ request }) =>
+        // Intercept ALL stylesheets, scripts, images, fonts, or assets requests regardless of path depth
+        urlPattern: ({ request, url }) =>
           request.destination === 'style' ||
           request.destination === 'script' ||
           request.destination === 'image' ||
-          request.destination === 'font',
-        handler: 'CacheFirst', // Forces offline-first fallback for visual elements
+          request.destination === 'font' ||
+          url.pathname.includes('/assets/'),
+        handler: 'CacheFirst', // Forces immediate offline rendering from cache
         options: {
           cacheName: 'rorabina-assets',
           expiration: {
-            maxEntries: 200,
+            maxEntries: 300,
             maxAgeSeconds: 60 * 24 * 60 * 60, // 60 days
           },
           cacheableResponse: {
-            statuses: [0, 200], // Caches 3rd party CDN resources like Google Fonts/CDNs
+            statuses: [0, 200], // Caches cross-origin CDNs (Google Fonts, Mobirise CDNs)
           },
         },
       },
