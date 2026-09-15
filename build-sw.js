@@ -63,7 +63,11 @@ async function buildSW() {
   const { count, size } = await workboxBuild.generateSW({
     globDirectory: './',
     globPatterns: [
-      '**/*.{html,css,js,png,jpg,jpeg,svg,gif,json,woff,woff2,ttf,eot}'
+      '**/*.html',
+      'assets/**/*.css',
+      'assets/**/*.js',
+      'assets/**/*.{png,jpg,jpeg,svg,gif,woff,woff2,ttf,eot}',
+      'manifest.json'
     ],
     globIgnores: [
       'node_modules/**/*',
@@ -75,14 +79,14 @@ async function buildSW() {
     ],
     swDest: 'sw.js',
     inlineWorkboxRuntime: true,
+    ignoreURLParametersMatching: [/./], // Strips ?v= query params from asset matches
     clientsClaim: true,
     skipWaiting: true,
     cleanupOutdatedCaches: true,
-    maximumFileSizeToCacheInBytes: 20 * 1024 * 1024,
+    maximumFileSizeToCacheInBytes: 25 * 1024 * 1024,
     navigateFallback: 'index.html',
     runtimeCaching: [
       {
-        // Cache all HTML navigations
         urlPattern: ({ request }) => request.mode === 'navigate',
         handler: 'StaleWhileRevalidate',
         options: {
@@ -91,22 +95,21 @@ async function buildSW() {
         },
       },
       {
-        // Intercept ALL stylesheets, scripts, images, fonts, or assets requests regardless of path depth
         urlPattern: ({ request, url }) =>
           request.destination === 'style' ||
           request.destination === 'script' ||
           request.destination === 'image' ||
           request.destination === 'font' ||
           url.pathname.includes('/assets/'),
-        handler: 'CacheFirst', // Forces immediate offline rendering from cache
+        handler: 'CacheFirst',
         options: {
           cacheName: 'rorabina-assets',
           expiration: {
             maxEntries: 300,
-            maxAgeSeconds: 60 * 24 * 60 * 60, // 60 days
+            maxAgeSeconds: 60 * 24 * 60 * 60,
           },
           cacheableResponse: {
-            statuses: [0, 200], // Caches cross-origin CDNs (Google Fonts, Mobirise CDNs)
+            statuses: [0, 200],
           },
         },
       },
