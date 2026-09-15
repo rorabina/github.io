@@ -1,16 +1,18 @@
 let deferredPrompt;
 
-// 1. Register Service Worker globally with dynamic update check
+// 1. Register Service Worker globally with explicit Root Scope
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
+    navigator.serviceWorker
+      .register('./sw.js', { scope: '/' })
       .then((registration) => {
-        console.log('Service Worker registered:', registration.scope);
-        
-        // Force immediate check for updated sw.js on page navigation
+        console.log('Service Worker registered with root scope:', registration.scope);
+        // Force immediate check for updated sw.js on page load
         registration.update();
       })
-      .catch((err) => console.error('Service Worker registration failed:', err));
+      .catch((err) => {
+        console.error('Service Worker registration failed:', err);
+      });
   });
 }
 
@@ -24,19 +26,16 @@ window.addEventListener('beforeinstallprompt', (e) => {
 // 3. Attach event listeners on app.html
 document.addEventListener('DOMContentLoaded', () => {
   if (window.location.pathname.includes('app.html')) {
-
     // Function to handle the Android install click/touch
     const handleAndroidInstall = async (e) => {
       e.preventDefault();
       e.stopPropagation();
-
       if (deferredPrompt) {
         deferredPrompt.prompt();
         const { outcome } = await deferredPrompt.userChoice;
         console.log(`User prompt response: ${outcome}`);
         deferredPrompt = null;
       } else {
-        // Fallback if prompt is unavailable or app is already installed
         alert('App installation is not available right now or the app is already installed on this device.');
       }
     };
@@ -61,14 +60,13 @@ document.addEventListener('DOMContentLoaded', () => {
     iosButtons.forEach((btn) => {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
-        const iosSection = Array.from(document.querySelectorAll('h2, h3, div')).find((el) =>
-          el.innerText && el.innerText.toLowerCase().includes('ios')
+        const iosSection = Array.from(document.querySelectorAll('h2, h3, div')).find(
+          (el) => el.innerText && el.innerText.toLowerCase().includes('ios')
         );
         if (iosSection) {
           iosSection.scrollIntoView({ behavior: 'smooth' });
         }
       });
     });
-
   }
 });
