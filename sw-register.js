@@ -1,13 +1,12 @@
 let deferredPrompt;
 
-// 1. Register Service Worker globally with explicit Root Scope
+// 1. Register Service Worker globally with relative directory scope
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker
-      .register('./sw.js', { scope: '/' })
+      .register('./sw.js') // Omit scope or use './'
       .then((registration) => {
-        console.log('Service Worker registered with root scope:', registration.scope);
-        // Force immediate check for updated sw.js on page load
+        console.log('Service Worker registered successfully with scope:', registration.scope);
         registration.update();
       })
       .catch((err) => {
