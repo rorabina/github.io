@@ -92,7 +92,7 @@ async function buildSW() {
     fs.writeFileSync(file, content, 'utf8');
   });
 
-  // 7. Generate Workbox Service Worker with Precache Manifest & Relative Navigation Fallback
+  // 7. Generate Workbox Service Worker with Explicit Precaching
   const { count, size } = await workboxBuild.generateSW({
     globDirectory: './',
     globPatterns: ['**/*.{html,css,js,png,jpg,jpeg,svg,gif,json}'],
@@ -100,24 +100,24 @@ async function buildSW() {
     swDest: 'sw.js',
     clientsClaim: true,
     skipWaiting: true,
-    cacheId: 'rorabina-app',
-    // Correct relative fallback for GitHub Pages
-    navigateFallback: 'index.html',
+    cleanupOutdatedCaches: true,
     runtimeCaching: [
       {
         urlPattern: ({ request }) => request.mode === 'navigate',
-        handler: 'NetworkFirst',
+        handler: 'StaleWhileRevalidate',
         options: {
           cacheName: 'rorabina-html-pages',
-          networkTimeoutSeconds: 3,
           expiration: {
             maxEntries: 50,
           },
         },
       },
       {
-        urlPattern: ({ request }) => request.destination === 'style' || request.destination === 'script' || request.destination === 'image',
-        handler: 'CacheFirst',
+        urlPattern: ({ request }) =>
+          request.destination === 'style' ||
+          request.destination === 'script' ||
+          request.destination === 'image',
+        handler: 'StaleWhileRevalidate',
         options: {
           cacheName: 'rorabina-assets',
           expiration: {
