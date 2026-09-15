@@ -92,7 +92,7 @@ async function buildSW() {
     fs.writeFileSync(file, content, 'utf8');
   });
 
-  // 7. Generate Workbox Service Worker with Guaranteed Pre-fetching & Navigation Fallback
+  // 7. Generate Workbox Service Worker with Guaranteed Active Precaching
   const { count, size } = await workboxBuild.generateSW({
     globDirectory: './',
     globPatterns: ['**/*.{html,css,js,png,jpg,jpeg,svg,gif,json}'],
@@ -107,7 +107,7 @@ async function buildSW() {
     runtimeCaching: [
       {
         urlPattern: ({ request }) => request.mode === 'navigate',
-        handler: 'CacheFirst',
+        handler: 'StaleWhileRevalidate',
         options: {
           cacheName: 'rorabina-html-pages',
           expiration: {
@@ -120,7 +120,7 @@ async function buildSW() {
           request.destination === 'style' ||
           request.destination === 'script' ||
           request.destination === 'image',
-        handler: 'CacheFirst',
+        handler: 'StaleWhileRevalidate',
         options: {
           cacheName: 'rorabina-assets',
           expiration: {
