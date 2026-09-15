@@ -59,10 +59,12 @@ async function buildSW() {
     fs.writeFileSync(file, content, 'utf8');
   });
 
-  // 7. Generate Workbox Service Worker with Inlined Workbox Runtime
+  // 7. Generate Workbox Service Worker with Universal Offline Pre-caching
   const { count, size } = await workboxBuild.generateSW({
     globDirectory: './',
-    globPatterns: ['**/*.{html,css,js,png,jpg,jpeg,svg,gif,json}'],
+    globPatterns: [
+      '**/*.{html,css,js,png,jpg,jpeg,svg,gif,json,woff,woff2,ttf,eot}'
+    ],
     globIgnores: [
       'node_modules/**/*',
       'build-sw.js',
@@ -76,10 +78,11 @@ async function buildSW() {
     clientsClaim: true,
     skipWaiting: true,
     cleanupOutdatedCaches: true,
-    maximumFileSizeToCacheInBytes: 15 * 1024 * 1024,
+    maximumFileSizeToCacheInBytes: 20 * 1024 * 1024,
     navigateFallback: 'index.html',
     runtimeCaching: [
       {
+        // Cache all HTML navigations
         urlPattern: ({ request }) => request.mode === 'navigate',
         handler: 'StaleWhileRevalidate',
         options: {
@@ -88,14 +91,22 @@ async function buildSW() {
         },
       },
       {
+        // Intercept ALL stylesheets, scripts, images, and fonts regardless of URL structure
         urlPattern: ({ request }) =>
           request.destination === 'style' ||
           request.destination === 'script' ||
-          request.destination === 'image',
-        handler: 'StaleWhileRevalidate',
+          request.destination === 'image' ||
+          request.destination === 'font',
+        handler: 'CacheFirst', // Forces offline-first fallback for visual elements
         options: {
           cacheName: 'rorabina-assets',
-          expiration: { maxEntries: 100, maxAgeSeconds: 30 * 24 * 60 * 60 },
+          expiration: {
+            maxEntries: 200,
+            maxAgeSeconds: 60 * 24 * 60 * 60, // 60 days
+          },
+          cacheableResponse: {
+            statuses: [0, 200], // Caches 3rd party CDN resources like Google Fonts/CDNs
+          },
         },
       },
     ],
