@@ -59,7 +59,7 @@ async function buildSW() {
     fs.writeFileSync(file, content, 'utf8');
   });
 
-  // 7. Generate Workbox Service Worker with Universal Offline Pre-caching
+  // 7. Generate Workbox Service Worker
   const { count, size } = await workboxBuild.generateSW({
     globDirectory: './',
     globPatterns: [
@@ -117,53 +117,6 @@ async function buildSW() {
   });
 
   console.log(`Generated sw.js: precatching ${count} files (${size} bytes).`);
-
-  // 8. Inject Progress Reporting Code into generated sw.js
-  const swPath = './sw.js';
-  if (fs.existsSync(swPath)) {
-    let swCode = fs.readFileSync(swPath, 'utf8');
-    const trackingScript = `
-
-/* --- Progress Reporting Extension --- */
-let totalPrecacheItems = ${count};
-let itemsCachedCount = 0;
-
-self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'GET_CACHE_PROGRESS') {
-    broadcastProgress();
-  }
-});
-
-function broadcastProgress() {
-  self.clients.matchAll().then((clients) => {
-    clients.forEach((client) => {
-      client.postMessage({
-        type: 'CACHE_PROGRESS',
-        current: itemsCachedCount,
-        total: totalPrecacheItems
-      });
-    });
-  });
-}
-
-// Track asset additions to cache
-self.addEventListener('fetch', (event) => {
-  if (event.request.method === 'GET') {
-    event.respondWith(
-      caches.match(event.request).then((cachedResponse) => {
-        if (!cachedResponse) {
-          itemsCachedCount++;
-          broadcastProgress();
-        }
-        return cachedResponse || fetch(event.request);
-      })
-    );
-  }
-});
-`;
-    fs.writeFileSync(swPath, swCode + trackingScript, 'utf8');
-    console.log('Successfully injected progress tracking listener into sw.js');
-  }
 }
 
 buildSW().catch(console.error);
