@@ -92,17 +92,22 @@ async function buildSW() {
     fs.writeFileSync(file, content, 'utf8');
   });
 
-  // 7. Generate Workbox Service Worker with Guaranteed Active Precaching
+  // 7. Generate Workbox Service Worker with Explicit Precaching & Active Claims
   const { count, size } = await workboxBuild.generateSW({
     globDirectory: './',
     globPatterns: ['**/*.{html,css,js,png,jpg,jpeg,svg,gif,json}'],
-    globIgnores: ['node_modules/**/*', 'build-sw.js', 'releases/**/*', '.github/**/*'],
+    globIgnores: [
+      'node_modules/**/*',
+      'build-sw.js',
+      'sw.js',
+      'releases/**/*',
+      '.github/**/*'
+    ],
     swDest: 'sw.js',
     clientsClaim: true,
     skipWaiting: true,
     cleanupOutdatedCaches: true,
-    maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10 MB limit per file
-    // Maps offline page navigations to precached HTML files
+    maximumFileSizeToCacheInBytes: 15 * 1024 * 1024,
     navigateFallback: 'index.html',
     runtimeCaching: [
       {
