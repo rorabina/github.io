@@ -1,7 +1,7 @@
-// Register Service Worker and manage offline caching progress UI
+// Register Service Worker and track precise Cache Storage progress
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    // Inject Progress Bar Container dynamically into DOM
+    // 1. Inject Floating Progress Card UI
     const barContainer = document.createElement('div');
     barContainer.id = 'pwa-cache-status';
     barContainer.innerHTML = `
@@ -36,7 +36,7 @@ if ('serviceWorker' in navigator) {
           height: 100%;
           width: 0%;
           background: #3b82f6;
-          transition: width 0.2s linear;
+          transition: width 0.3s ease-out;
         }
         .pwa-text-row {
           display: flex;
@@ -53,40 +53,55 @@ if ('serviceWorker' in navigator) {
       </div>
     `;
 
-    // Only append widget if the page is online and not already fully cached
     if (navigator.onLine && !localStorage.getItem('pwa_fully_cached')) {
       document.body.appendChild(barContainer);
     }
 
-    // Register Service Worker
+    // 2. Register Service Worker
     navigator.serviceWorker.register('/sw.js').then(reg => {
-      console.log('Service Worker registered with scope:', reg.scope);
-    }).catch(err => console.error('SW registration failed:', err));
+      console.log('SW Registered:', reg.scope);
+    }).catch(err => console.error('SW Registration Failed:', err));
 
-    // Listen for progress updates from sw.js
-    navigator.serviceWorker.addEventListener('message', (event) => {
-      if (event.data && event.data.type === 'CACHE_PROGRESS') {
-        const percent = Math.min(Math.round((event.data.current / event.data.total) * 100), 100);
-        const fill = document.getElementById('pwa-progress-fill');
-        const pctText = document.getElementById('pwa-status-pct');
-        const labelText = document.getElementById('pwa-status-label');
+    // 3. Monitor Actual Workbox Cache Storage Entries
+    const targetTotalItems = 123; // Total files precached by build-sw.js
+    let checkInterval = setInterval(async () => {
+      try {
+        const cacheKeys = await caches.keys();
+        const precacheName = cacheKeys.find(key => key.includes('workbox-precache'));
 
-        if (fill) fill.style.width = percent + '%';
-        if (pctText) pctText.innerText = percent + '%';
+        if (precacheName) {
+          const cache = await caches.open(precacheName);
+          const cachedRequests = await cache.keys();
+          const currentCount = cachedRequests.length;
 
-        if (percent >= 100) {
-          if (labelText) labelText.innerText = 'Ready for offline use!';
-          localStorage.setItem('pwa_fully_cached', 'true');
-          setTimeout(() => {
-            const widget = document.getElementById('pwa-cache-status');
-            if (widget) {
-              widget.style.opacity = '0';
-              widget.style.transform = 'translateY(10px)';
-              setTimeout(() => widget.remove(), 400);
-            }
-          }, 2500);
+          const percent = Math.min(Math.round((currentCount / targetTotalItems) * 100), 100);
+
+          const fill = document.getElementById('pwa-progress-fill');
+          const pctText = document.getElementById('pwa-status-pct');
+          const labelText = document.getElementById('pwa-status-label');
+
+          if (fill) fill.style.width = percent + '%';
+          if (pctText) pctText.innerText = percent + '%';
+
+          // When cache reaches 100% or finishes initial installation
+          if (percent >= 100) {
+            clearInterval(checkInterval);
+            if (labelText) labelText.innerText = 'Ready for offline use!';
+            localStorage.setItem('pwa_fully_cached', 'true');
+
+            setTimeout(() => {
+              const widget = document.getElementById('pwa-cache-status');
+              if (widget) {
+                widget.style.opacity = '0';
+                widget.style.transform = 'translateY(10px)';
+                setTimeout(() => widget.remove(), 400);
+              }
+            }, 2000);
+          }
         }
+      } catch (err) {
+        console.error('Cache progress error:', err);
       }
-    });
+    }, 400); // Polls cache storage every 400ms during installation
   });
 }
