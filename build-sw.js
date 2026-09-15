@@ -2,7 +2,7 @@ const workboxBuild = require('workbox-build');
 const fs = require('fs');
 
 async function buildSW() {
-  console.log('Cleaning HTML files, injecting PWA manifest, and attaching Android PWA installer...');
+  console.log('Cleaning HTML files, injecting manifest, fixing CapacitorUpdater, adding sw-register, and building SW...');
   const htmlFiles = fs.readdirSync('./').filter(file => file.endsWith('.html'));
 
   htmlFiles.forEach(file => {
@@ -12,7 +12,20 @@ async function buildSW() {
     content = content.replace(/<(section|div|footer|p)[^>]*>(?:(?!<\/(?:section|div|footer|p)>)[\s\S])*?href="https?:\/\/(www\.)?(mobirise\.com|mobiri\.se)[^"]*"[\s\S]*?<\/\1>/gi, '');
     content = content.replace(/<a[^>]*href="https?:\/\/(www\.)?(mobirise\.com|mobiri\.se)[^"]*"[^>]*>[\s\S]*?<\/a>/gi, '');
 
-    // 2. Inject CSS Fail-Safe to disable layout clicks on leftover Mobirise elements
+    // 2. Fix broken Capgo CapacitorUpdater CDN import that causes JavaScript SyntaxError
+    content = content.replace(
+      /<script[^>]*type="module"[^>]*>[\s\S]*?import\s*\{\s*CapacitorUpdater\s*\}\s*from\s*['"]https:\/\/cdn\.jsdelivr\.net\/npm\/@capgo\/capacitor-updater[^'"]*['"];?[\s\S]*?<\/script>/gi,
+      `<script>
+  document.addEventListener('deviceready', () => {
+    const { CapacitorUpdater } = window.Capacitor?.Plugins || {};
+    if (CapacitorUpdater) {
+      CapacitorUpdater.notifyAppReady();
+    }
+  });
+</script>`
+    );
+
+    // 3. Inject CSS Fail-Safe
     if (!content.includes('/* Mobirise Fail-Safe */')) {
       const styleInject = `
 <style id="mobirise-cleaner">
@@ -30,19 +43,22 @@ async function buildSW() {
       content = content.replace(/<\/head>/i, `${styleInject}\n</head>`);
     }
 
-    // 3. Inject Web App Manifest link if missing
+    // 4. Inject Web App Manifest link if missing
     if (!content.includes('rel="manifest"')) {
       content = content.replace(/<\/head>/i, '  <link rel="manifest" href="manifest.json">\n</head>');
     }
 
-    // 4. Inject Android PWA Install Handler into app.html
+    // 5. Inject Service Worker registration script into ALL HTML pages if missing
+    if (!content.includes('sw-register.js')) {
+      content = content.replace(/<\/body>/i, '  <script src="sw-register.js"></script>\n</body>');
+    }
+
+    // 6. Inject Android PWA Install Handler into app.html
     if (file === 'app.html' && !content.includes('pwa-android-installer')) {
       const pwaInstallerScript = `
 <script id="pwa-android-installer">
   (function() {
     let deferredPrompt = null;
-
-    // Listen for the browser PWA install event
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
@@ -50,7 +66,6 @@ async function buildSW() {
     });
 
     document.addEventListener('DOMContentLoaded', () => {
-      // Target the Android button by its text content or icon
       const buttons = Array.from(document.querySelectorAll('a, button'));
       const androidBtn = buttons.find(b => b.textContent.includes('Android') || b.querySelector('.socicon-android'));
 
@@ -77,7 +92,7 @@ async function buildSW() {
     fs.writeFileSync(file, content, 'utf8');
   });
 
-  // 5. Generate Workbox Service Worker with Full Offline HTML Routing
+  // 7. Generate Workbox Service Worker with Full Offline HTML Routing
   const { count, size } = await workboxBuild.generateSW({
     globDirectory: './',
     globPatterns: ['**/*.{html,css,js,png,jpg,jpeg,svg,gif,json}'],
@@ -87,7 +102,6 @@ async function buildSW() {
     skipWaiting: true,
     runtimeCaching: [
       {
-        // Intercept all HTML page navigations and serve them directly from cache offline
         urlPattern: ({ request }) => request.mode === 'navigate',
         handler: 'NetworkFirst',
         options: {
