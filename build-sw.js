@@ -77,14 +77,16 @@ async function buildSW() {
     fs.writeFileSync(file, content, 'utf8');
   });
 
-  // 5. Generate Workbox Service Worker
+  // 5. Generate Workbox Service Worker with Offline Fallback
   const { count, size } = await workboxBuild.generateSW({
     globDirectory: './',
     globPatterns: ['**/*.{html,css,js,png,jpg,jpeg,svg,gif,json}'],
     globIgnores: ['node_modules/**/*', 'build-sw.js', 'releases/**/*', '.github/**/*'],
     swDest: 'sw.js',
     clientsClaim: true,
-    skipWaiting: true
+    skipWaiting: true,
+    navigateFallback: 'index.html',
+    navigateFallbackDenylist: [/^\/api\//]
   });
 
   console.log(`Generated sw.js: precaching ${count} files (${size} bytes).`);
