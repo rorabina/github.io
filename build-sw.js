@@ -12,7 +12,10 @@ async function buildSW() {
     content = content.replace(/<(section|div|footer|p)[^>]*>(?:(?!<\/(?:section|div|footer|p)>)[\s\S])*?href="https?:\/\/(www\.)?(mobirise\.com|mobiri\.se)[^"]*"[\s\S]*?<\/\1>/gi, '');
     content = content.replace(/<a[^>]*href="https?:\/\/(www\.)?(mobirise\.com|mobiri\.se)[^"]*"[^>]*>[\s\S]*?<\/a>/gi, '');
 
-    // 2. Fix broken Capgo CapacitorUpdater CDN import
+    // 2. Remove duplicate inline PWA installers from app.html
+    content = content.replace(/<script[^>]*id="pwa-android-installer"[^>]*>[\s\S]*?<\/script>/gi, '');
+
+    // 3. Fix broken Capgo CapacitorUpdater CDN import
     content = content.replace(
       /<script[^>]*type="module"[^>]*>[\s\S]*?import\s*\{\s*CapacitorUpdater\s*\}\s*from\s*['"]https:\/\/cdn\.jsdelivr\.net\/npm\/@capgo\/capacitor-updater[^'"]*['"];?[\s\S]*?<\/script>/gi,
       `<script>
@@ -25,7 +28,7 @@ async function buildSW() {
 </script>`
     );
 
-    // 3. Inject CSS Fail-Safe
+    // 4. Inject CSS Fail-Safe
     if (!content.includes('/* Mobirise Fail-Safe */')) {
       const styleInject = `
 <style id="mobirise-cleaner">
@@ -43,12 +46,12 @@ async function buildSW() {
       content = content.replace(/<\/head>/i, `${styleInject}\n</head>`);
     }
 
-    // 4. Inject Web App Manifest link if missing
+    // 5. Inject Web App Manifest link if missing
     if (!content.includes('rel="manifest"')) {
       content = content.replace(/<\/head>/i, '  <link rel="manifest" href="manifest.json">\n</head>');
     }
 
-    // 5. Inject Service Worker registration script into ALL HTML pages if missing
+    // 6. Inject Service Worker registration script into ALL HTML pages if missing
     if (!content.includes('sw-register.js')) {
       content = content.replace(/<\/body>/i, '  <script src="sw-register.js"></script>\n</body>');
     }
@@ -56,7 +59,7 @@ async function buildSW() {
     fs.writeFileSync(file, content, 'utf8');
   });
 
-  // 6. Generate Workbox Service Worker with Inlined Workbox Runtime
+  // 7. Generate Workbox Service Worker with Inlined Workbox Runtime
   const { count, size } = await workboxBuild.generateSW({
     globDirectory: './',
     globPatterns: ['**/*.{html,css,js,png,jpg,jpeg,svg,gif,json}'],
