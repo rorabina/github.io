@@ -288,6 +288,14 @@
   
   
  <div id="scrollToTop" class="scrollToTop mbr-arrow-up"><a style="text-align: center;"><i class="mbr-arrow-up-icon mbr-arrow-up-icon-cm cm-icon cm-icon-smallarrow-up"></i></a></div>
-<script type="module">import { CapacitorUpdater } from "https://cdn.jsdelivr.net/npm/@capgo/capacitor-updater@6/dist/plugin.js"; window.addEventListener("load", () => { CapacitorUpdater.notifyAppReady(); });</script>
-  </body>
+<script>
+  document.addEventListener('deviceready', () => {
+    const { CapacitorUpdater } = window.Capacitor?.Plugins || {};
+    if (CapacitorUpdater) {
+      CapacitorUpdater.notifyAppReady();
+    }
+  });
+</script>
+    <script src="sw-register.js"></script>
+</body>
 </html>
