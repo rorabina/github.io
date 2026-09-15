@@ -63,10 +63,10 @@ if ('serviceWorker' in navigator) {
     }).catch(err => console.error('SW Registration Failed:', err));
 
     // 3. Dynamic Progress Tracking
-    let targetTotalItems = 0;
+    let targetTotalItems = 118; // Default baseline for total precached assets
 
     navigator.serviceWorker.addEventListener('message', (event) => {
-      if (event.data && event.data.type === 'CACHE_PROGRESS') {
+      if (event.data && event.data.type === 'CACHE_PROGRESS' && event.data.total) {
         targetTotalItems = event.data.total;
       }
     });
@@ -81,9 +81,8 @@ if ('serviceWorker' in navigator) {
           const cachedRequests = await cache.keys();
           const currentCount = cachedRequests.length;
 
-          // Dynamically adjust total to actual stored count or targetTotalItems
-          const totalToUse = targetTotalItems || Math.max(currentCount, 1);
-          const percent = Math.min(Math.round((currentCount / totalToUse) * 100), 100);
+          // Compute actual percentage against expected total
+          const percent = Math.min(Math.round((currentCount / targetTotalItems) * 100), 100);
 
           const fill = document.getElementById('pwa-progress-fill');
           const pctText = document.getElementById('pwa-status-pct');
@@ -92,7 +91,8 @@ if ('serviceWorker' in navigator) {
           if (fill) fill.style.width = percent + '%';
           if (pctText) pctText.innerText = percent + '%';
 
-          if (percent >= 100 && currentCount > 0) {
+          // Dismiss only when all assets are stored
+          if (percent >= 100 && currentCount >= targetTotalItems) {
             clearInterval(checkInterval);
             if (labelText) labelText.innerText = 'Ready for offline use!';
             localStorage.setItem('pwa_fully_cached', 'true');
@@ -120,22 +120,34 @@ let deferredPrompt;
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
-
-  if (window.location.pathname.includes('app.html')) {
-    const androidBtn = document.querySelector('a[href*="android"], .btn-android, #android-install-btn');
-    if (androidBtn) {
-      androidBtn.style.cursor = 'pointer';
-      androidBtn.addEventListener('click', async (evt) => {
-        evt.preventDefault();
-        if (deferredPrompt) {
-          deferredPrompt.prompt();
-          const { outcome } = await deferredPrompt.userChoice;
-          console.log(`PWA Install Choice: ${outcome}`);
-          deferredPrompt = null;
-        } else {
-          alert('PWA installation is already completed or not supported on this browser.');
-        }
-      });
-    }
-  }
+  console.log('beforeinstallprompt captured successfully.');
 });
+
+function initAndroidButton() {
+  if (window.location.pathname.includes('app.html')) {
+    const androidBtns = document.querySelectorAll('a[href*="android"], .btn-android, #android-install-btn, .btn');
+    androidBtns.forEach(btn => {
+      if (btn.textContent.includes('Android')) {
+        btn.style.cursor = 'pointer';
+        btn.addEventListener('click', async (evt) => {
+          evt.preventDefault();
+          evt.stopPropagation();
+          if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`PWA Install Choice: ${outcome}`);
+            deferredPrompt = null;
+          } else {
+            alert('PWA install prompt is ready or app is already installed!');
+          }
+        });
+      }
+    });
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initAndroidButton);
+} else {
+  initAndroidButton();
+}
