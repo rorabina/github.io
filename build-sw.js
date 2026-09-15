@@ -92,22 +92,22 @@ async function buildSW() {
     fs.writeFileSync(file, content, 'utf8');
   });
 
-  // 7. Generate Workbox Service Worker with Guaranteed Precache & Offline Fallback
+  // 7. Generate Workbox Service Worker with Precache Manifest & Navigation Route
   const { count, size } = await workboxBuild.generateSW({
     globDirectory: './',
     globPatterns: ['**/*.{html,css,js,png,jpg,jpeg,svg,gif,json}'],
     globIgnores: ['node_modules/**/*', 'build-sw.js', 'releases/**/*', '.github/**/*'],
     swDest: 'sw.js',
-    cacheId: 'rorabina-site',
     clientsClaim: true,
     skipWaiting: true,
+    // Ensures Workbox falls back to precached HTML files offline
+    navigateFallback: '/index.html',
     runtimeCaching: [
       {
         urlPattern: ({ request }) => request.mode === 'navigate',
-        handler: 'NetworkFirst',
+        handler: 'StaleWhileRevalidate',
         options: {
           cacheName: 'rorabina-html-pages',
-          networkTimeoutSeconds: 3,
           expiration: {
             maxEntries: 50,
           },
@@ -115,9 +115,13 @@ async function buildSW() {
       },
       {
         urlPattern: ({ request }) => request.destination === 'style' || request.destination === 'script' || request.destination === 'image',
-        handler: 'StaleWhileRevalidate',
+        handler: 'CacheFirst',
         options: {
           cacheName: 'rorabina-assets',
+          expiration: {
+            maxEntries: 100,
+            maxAgeSeconds: 30 * 24 * 60 * 60, // 30 Days
+          },
         },
       },
     ],
