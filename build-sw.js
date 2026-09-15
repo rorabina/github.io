@@ -77,7 +77,7 @@ async function buildSW() {
     fs.writeFileSync(file, content, 'utf8');
   });
 
-  // 5. Generate Workbox Service Worker with Offline Fallback
+  // 5. Generate Workbox Service Worker with Full Offline HTML Routing
   const { count, size } = await workboxBuild.generateSW({
     globDirectory: './',
     globPatterns: ['**/*.{html,css,js,png,jpg,jpeg,svg,gif,json}'],
@@ -85,8 +85,20 @@ async function buildSW() {
     swDest: 'sw.js',
     clientsClaim: true,
     skipWaiting: true,
-    navigateFallback: 'index.html',
-    navigateFallbackDenylist: [/^\/api\//]
+    runtimeCaching: [
+      {
+        // Intercept all HTML page navigations and serve them directly from cache offline
+        urlPattern: ({ request }) => request.mode === 'navigate',
+        handler: 'NetworkFirst',
+        options: {
+          cacheName: 'html-pages-cache',
+          networkTimeoutSeconds: 3,
+          expiration: {
+            maxEntries: 50,
+          },
+        },
+      },
+    ],
   });
 
   console.log(`Generated sw.js: precaching ${count} files (${size} bytes).`);
