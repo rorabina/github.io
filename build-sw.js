@@ -92,7 +92,7 @@ async function buildSW() {
     fs.writeFileSync(file, content, 'utf8');
   });
 
-  // 7. Generate Workbox Service Worker with Explicit Precaching
+  // 7. Generate Workbox Service Worker with Explicit Precaching & Extended Limit
   const { count, size } = await workboxBuild.generateSW({
     globDirectory: './',
     globPatterns: ['**/*.{html,css,js,png,jpg,jpeg,svg,gif,json}'],
@@ -101,6 +101,7 @@ async function buildSW() {
     clientsClaim: true,
     skipWaiting: true,
     cleanupOutdatedCaches: true,
+    maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10 MB limit per file
     runtimeCaching: [
       {
         urlPattern: ({ request }) => request.mode === 'navigate',
