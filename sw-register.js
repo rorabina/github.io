@@ -1,4 +1,4 @@
-=let deferredPrompt;
+let deferredPrompt;
 
 // 1. Register Service Worker with relative directory scope
 if ('serviceWorker' in navigator) {
