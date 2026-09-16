@@ -117,6 +117,32 @@ async function buildSW() {
   });
 
   console.log(`Generated sw.js: precatching ${count} files (${size} bytes).`);
+
+  // 8. Inject BroadcastChannel Progress Reporting into generated sw.js
+  const swPath = './sw.js';
+  if (fs.existsSync(swPath)) {
+    let swCode = fs.readFileSync(swPath, 'utf8');
+    const trackingScript = `
+
+/* --- Progress Broadcast Tracking Extension --- */
+const pwaBroadcast = new BroadcastChannel('pwa-cache-channel');
+
+self.addEventListener('install', (event) => {
+  const totalItems = ${count};
+  let loadedItems = 0;
+
+  // Intercept asset fetching during install phase
+  event.waitUntil(
+    caches.open(workbox.core.cacheNames.precache).then(async (cache) => {
+      const keys = await cache.keys();
+      pwaBroadcast.postMessage({ type: 'CACHE_PROGRESS', percent: Math.round((keys.length / totalItems) * 100), total: totalItems });
+    })
+  );
+});
+`;
+    fs.writeFileSync(swPath, swCode + trackingScript, 'utf8');
+    console.log('Successfully injected BroadcastChannel tracking into sw.js');
+  }
 }
 
 buildSW().catch(console.error);
