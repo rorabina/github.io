@@ -1,4 +1,4 @@
-// Register Service Worker, Dynamic Cache Progress, and Scoped Android PWA Trigger
+// Register Service Worker, Truly Dynamic Cache Progress, and Scoped Android PWA Trigger
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     // 1. Inject Floating Progress Bar UI
@@ -62,12 +62,13 @@ if ('serviceWorker' in navigator) {
       console.log('SW Registered:', reg.scope);
     }).catch(err => console.error('SW Registration Failed:', err));
 
-    // 3. Dynamic Progress Tracking
-    let targetTotalItems = 118; // Default baseline for total precached assets
+    // 3. Fully Dynamic Progress Tracking (No Hardcoded Counts)
+    let dynamicTotal = 0;
 
+    // Listen for broadcast total from Service Worker if available
     navigator.serviceWorker.addEventListener('message', (event) => {
       if (event.data && event.data.type === 'CACHE_PROGRESS' && event.data.total) {
-        targetTotalItems = event.data.total;
+        dynamicTotal = event.data.total;
       }
     });
 
@@ -81,8 +82,22 @@ if ('serviceWorker' in navigator) {
           const cachedRequests = await cache.keys();
           const currentCount = cachedRequests.length;
 
-          // Compute actual percentage against expected total
-          const percent = Math.min(Math.round((currentCount / targetTotalItems) * 100), 100);
+          // Dynamically adapt total target based on highest detected count or broadcast
+          dynamicTotal = Math.max(dynamicTotal, currentCount);
+
+          // Check Service Worker registration status to confirm precaching completed
+          const swReg = await navigator.serviceWorker.getRegistration();
+          const isSWActive = swReg && swReg.active && !swReg.installing;
+
+          let percent = 0;
+          if (dynamicTotal > 0) {
+            percent = Math.min(Math.round((currentCount / dynamicTotal) * 100), 100);
+          }
+
+          // If SW installation is finished and assets are cached, force 100% completion
+          if (isSWActive && currentCount > 0 && percent >= 95) {
+            percent = 100;
+          }
 
           const fill = document.getElementById('pwa-progress-fill');
           const pctText = document.getElementById('pwa-status-pct');
@@ -91,8 +106,8 @@ if ('serviceWorker' in navigator) {
           if (fill) fill.style.width = percent + '%';
           if (pctText) pctText.innerText = percent + '%';
 
-          // Dismiss only when all assets are stored
-          if (percent >= 100 && currentCount >= targetTotalItems) {
+          // Dismiss bar smoothly when full
+          if (percent >= 100) {
             clearInterval(checkInterval);
             if (labelText) labelText.innerText = 'Ready for offline use!';
             localStorage.setItem('pwa_fully_cached', 'true');
@@ -108,7 +123,7 @@ if ('serviceWorker' in navigator) {
           }
         }
       } catch (err) {
-        console.error('Cache progress error:', err);
+        console.error('Cache progress tracking error:', err);
       }
     }, 400);
   });
